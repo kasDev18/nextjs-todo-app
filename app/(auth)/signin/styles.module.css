@@ -1,0 +1,109 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.SignIn {
+  @apply bg-deep relative flex h-screen items-center justify-center gap-10 px-10;
+}
+
+.SignIn_content {
+  @apply z-1 w-full max-w-[360px];
+}
+
+.SignIn_contentHeader {
+  @apply mb-10 flex flex-col gap-2;
+}
+
+.SignIn_contentHeaderTitle {
+  @apply text-muted flex items-center gap-2 text-xs font-semibold tracking-widest uppercase;
+}
+
+.SignIn_greeting {
+  @apply text-2xl font-extrabold tracking-tight;
+  font-family: var(--font-display);
+}
+
+.SignIn_socialBtns {
+  @apply mb-6 grid grid-cols-2 gap-3;
+}
+
+.SignIn_socialBtn {
+  @apply bg-card text-secondary hover:text-primary rounded-md p-[11px] text-sm font-medium duration-200;
+}
+
+.SignIn_orRow {
+  @apply mb-5 flex items-center gap-3;
+}
+
+.SignIn_orRow::before,
+.SignIn_orRow::after {
+  @apply bg-subtle h-px;
+  content: "";
+  flex: 1;
+}
+
+.SignIn_orRow span {
+  @apply text-muted text-xs font-semibold tracking-wider uppercase;
+}
+
+.SignIn_fieldLabel {
+  @apply text-label mb-2 block text-xs font-semibold tracking-wider uppercase;
+}
+
+.SignIn_fieldInput {
+  @apply bg-input border-subtle text-primary w-full rounded-md border p-3 text-sm transition-all duration-200;
+}
+
+.SignIn_fieldInput::placeholder {
+  @apply text-muted;
+}
+
+.SignIn_fieldInput:focus {
+  @apply border-focus;
+  box-shadow: 0 0 0 3px rgba(61, 130, 246, 0.12);
+}
+
+.SignIn_fieldInputError {
+  @apply border-rose;
+}
+
+.SignIn_fieldInputError:focus {
+  @apply border-rose;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.SignIn_fieldIcon {
+  @apply text-muted absolute top-1/2 right-3 -translate-y-1/2 transform cursor-pointer;
+}
+
+.SignIn_fieldIcon svg {
+  @apply h-4 w-4 fill-none stroke-current;
+  stroke-width: 1.8;
+}
+
+.SignIn_checkbox {
+  @apply mb-5 flex items-center justify-between;
+}
+
+.SignIn_btnSubmit {
+  @apply bg-primary relative w-full cursor-pointer overflow-hidden rounded-md p-3 text-sm font-bold tracking-wide text-white transition-all duration-200;
+  background: linear-gradient(135deg, #3d82f6 0%, #7c5fe6 100%);
+}
+
+.SignIn_btnSubmit:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(61, 130, 246, 0.45);
+}
+
+.SignIn_btnSubmit:active {
+  transform: translateY(0);
+}
+
+.SignIn_signupRow {
+  @apply text-muted mt-5 text-center text-sm;
+}
+
+.SignIn_signupRowLink {
+  @apply text-accent font-medium;
+  text-decoration: none;
+}
