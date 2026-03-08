@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { APIError } from "better-auth/api";
+import { getUserByEmail } from "@/lib/db/users";
 
 type SignUpResult = { success: true } | { success: false; error: string };
 
@@ -12,6 +13,12 @@ export async function signUpAction(
   password: string,
 ): Promise<SignUpResult> {
   try {
+    const existing = await getUserByEmail(email);
+
+    if (existing.length > 0) {
+      return { success: false, error: "An account with this email already exists." };
+    }
+
     await auth.api.signUpEmail({
       headers: await headers(),
       body: { name, email, password },
