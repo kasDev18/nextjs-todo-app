@@ -1,0 +1,109 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.SignUp {
+  @apply bg-deep relative flex min-h-screen items-center justify-center gap-10 px-10 py-12;
+}
+
+.SignUp_content {
+  @apply z-1 w-full max-w-[360px];
+}
+
+.SignUp_contentHeader {
+  @apply mb-10 flex flex-col gap-2;
+}
+
+.SignUp_contentHeaderTitle {
+  @apply text-muted flex items-center gap-2 text-xs font-semibold tracking-widest uppercase;
+}
+
+.SignUp_greeting {
+  @apply text-2xl font-extrabold tracking-tight;
+  font-family: var(--font-display);
+}
+
+.SignUp_socialBtns {
+  @apply mb-6 grid grid-cols-2 gap-3;
+}
+
+.SignUp_socialBtn {
+  @apply bg-card text-secondary hover:text-primary rounded-md p-[11px] text-sm font-medium duration-200;
+}
+
+.SignUp_orRow {
+  @apply mb-5 flex items-center gap-3;
+}
+
+.SignUp_orRow::before,
+.SignUp_orRow::after {
+  @apply bg-subtle h-px;
+  content: "";
+  flex: 1;
+}
+
+.SignUp_orRow span {
+  @apply text-muted text-xs font-semibold tracking-wider uppercase;
+}
+
+.SignUp_fieldLabel {
+  @apply text-label mb-2 block text-xs font-semibold tracking-wider uppercase;
+}
+
+.SignUp_fieldInput {
+  @apply bg-input border-subtle text-primary w-full rounded-md border p-3 text-sm transition-all duration-200;
+}
+
+.SignUp_fieldInput::placeholder {
+  @apply text-muted;
+}
+
+.SignUp_fieldInput:focus {
+  @apply border-focus;
+  box-shadow: 0 0 0 3px rgba(61, 130, 246, 0.12);
+}
+
+.SignUp_fieldInputError {
+  @apply border-rose;
+}
+
+.SignUp_fieldInputError:focus {
+  @apply border-rose;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.SignUp_fieldIcon {
+  @apply text-muted absolute top-1/2 right-3 -translate-y-1/2 transform cursor-pointer;
+}
+
+.SignUp_fieldIcon svg {
+  @apply h-4 w-4 fill-none stroke-current;
+  stroke-width: 1.8;
+}
+
+.SignUp_btnSubmit {
+  @apply bg-primary relative w-full cursor-pointer overflow-hidden rounded-md p-3 text-sm font-bold tracking-wide text-white transition-all duration-200;
+  background: linear-gradient(135deg, #3d82f6 0%, #7c5fe6 100%);
+}
+
+.SignUp_btnSubmit:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(61, 130, 246, 0.45);
+}
+
+.SignUp_btnSubmit:active {
+  transform: translateY(0);
+}
+
+.SignUp_signinRow {
+  @apply text-muted mt-5 text-center text-sm;
+}
+
+.SignUp_signinRowLink {
+  @apply text-accent font-medium;
+  text-decoration: none;
+}
+
+.SignUp_serverError {
+  @apply border-rose/20 bg-rose/5 text-rose mb-4 rounded-md border px-3 py-2.5 text-sm;
+}
