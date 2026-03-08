@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Syne, Instrument_Sans } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const syne = Syne({
   variable: "--font-display",
@@ -24,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${syne.variable} ${instrumentSans.variable} antialiased`}>{children}</body>
+      <body className={`${syne.variable} ${instrumentSans.variable} antialiased`}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

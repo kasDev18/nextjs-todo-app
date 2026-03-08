@@ -5,8 +5,8 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 export const auth = betterAuth({
   appName: "NextJS Todo App",
-  secret: process.env.BETTER_AUTH_SECRET || "your-better-auth-secret",
-  baseURL: process.env.BASE_URL || "http://localhost:3000",
+  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.BASE_URL,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -18,9 +18,9 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false,
+    requireEmailVerification: true,
     minPasswordLength: 8,
-    maxPasswordLength: 128,
+    maxPasswordLength: 20,
     allowSignIn: true,
   },
   session: {
