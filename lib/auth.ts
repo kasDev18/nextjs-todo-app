@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { sendVerificationEmail } from "./email/mail";
 
 export const auth = betterAuth({
   appName: "NextJS Todo App",
@@ -16,6 +17,14 @@ export const auth = betterAuth({
       account: schema.accounts, // Changed from accounts to account
     },
   }),
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      sendVerificationEmail(user.email, user.name, url).catch((error) => {
+        console.error("Failed to send verification email:", error);
+      });
+    },
+    sendOnSignIn: true,
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

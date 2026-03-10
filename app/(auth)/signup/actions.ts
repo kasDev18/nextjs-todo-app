@@ -21,7 +21,7 @@ export async function signUpAction(
 
     await auth.api.signUpEmail({
       headers: await headers(),
-      body: { name, email, password },
+      body: { name, email, password, callbackURL: "/" },
     });
 
     return { success: true };
