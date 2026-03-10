@@ -1,3 +1,5 @@
+import { ThemeProvider } from "@/providers/theme";
+import Header from "@/components/header";
 import type { Metadata } from "next";
 import { Syne, Instrument_Sans } from "next/font/google";
 import "./globals.css";
@@ -24,9 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${syne.variable} ${instrumentSans.variable} antialiased`}>
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Header />
+          {children}
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>
