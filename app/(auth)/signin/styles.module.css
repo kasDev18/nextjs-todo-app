@@ -2,11 +2,11 @@
 @reference "../../../app/globals.css";
 
 .SignIn {
-  @apply bg-deep relative flex min-h-screen items-center justify-center gap-10 px-10 py-12;
+  @apply bg-deep relative flex h-[calc(100vh-6.25rem)] items-center justify-center gap-10 px-5;
 }
 
 .SignIn_content {
-  @apply z-1 w-full max-w-[360px];
+  @apply z-1 w-full max-w-[22.5rem];
 }
 
 .SignIn_contentHeader {
@@ -27,7 +27,7 @@
 }
 
 .SignIn_socialBtn {
-  @apply bg-card text-secondary hover:text-primary rounded-md p-[11px] text-sm font-medium duration-200;
+  @apply bg-card text-secondary hover:text-primary rounded-md p-[0.688rem] text-sm font-medium duration-200;
 }
 
 .SignIn_orRow {
@@ -81,7 +81,18 @@
 }
 
 .SignIn_checkbox {
-  @apply mb-5 flex items-center justify-between;
+  @apply mb-5 gap-2.5;
+}
+
+.SignIn_checkboxInput[data-state="checked"] {
+  background-color: var(--accent-val) !important;
+  border-color: var(--accent-val) !important;
+  color: #ffffff !important;
+  box-shadow: none;
+}
+
+.SignIn_checkboxLabel {
+  @apply text-secondary text-sm leading-none;
 }
 
 .SignIn_btnSubmit {
