@@ -29,8 +29,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${syne.variable} ${instrumentSans.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          {children}
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            {children}
+          </div>
         </ThemeProvider>
         <Toaster />
       </body>

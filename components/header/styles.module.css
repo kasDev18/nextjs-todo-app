@@ -3,7 +3,7 @@
 
 /* ── Top Bar ── */
 .topbar {
-  @apply relative flex items-center justify-between p-5 md:absolute md:top-0 md:right-0 md:left-0 md:z-10;
+  @apply relative z-10 flex items-center justify-between p-5;
 }
 
 .logo {
