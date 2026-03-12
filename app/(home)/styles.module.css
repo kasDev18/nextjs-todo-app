@@ -1,0 +1,95 @@
+@reference "tailwindcss";
+@reference "../globals.css";
+
+.HomePage {
+  @apply min-h-[calc(100vh-5rem)] px-2 md:px-6;
+}
+
+.HomePage_Board {
+  @apply mx-auto grid max-w-5xl items-start gap-3 lg:grid-cols-3;
+}
+
+.HomePage_col {
+  @apply border-border bg-subtle dark:border-border dark:bg-card dark:shadow-card flex h-[85vh] flex-col overflow-hidden rounded-[1.125rem] border p-3 pr-4 md:p-4 md:pr-5;
+}
+
+.HomePage_separator {
+  @apply border-b-accent-glow mb-4 border-b;
+}
+
+.HomePage_colHeader {
+  @apply mb-5 flex items-center justify-between gap-3;
+}
+
+.HomePage_titleRow {
+  @apply bg-subtle/50 flex items-center gap-2 rounded-lg p-3 md:p-4;
+}
+
+.HomePage_titleRow[data-category="progress"] {
+  @apply bg-accent-glow;
+}
+
+.HomePage_titleRow[data-category="done"] {
+  @apply bg-green-500/20;
+}
+
+.HomePage_title {
+  @apply text-muted text-[0.68rem] font-semibold tracking-[0.16em] uppercase md:text-xs md:tracking-[0.18em];
+}
+
+.HomePage_colCount {
+  @apply text-muted flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[0.68rem] font-semibold md:h-6 md:min-w-6 md:px-1.5 md:text-[0.75rem];
+}
+
+.HomePage_title[data-category="progress"] {
+  @apply text-accent;
+}
+
+.HomePage_title[data-category="done"] {
+  @apply text-green;
+}
+
+.HomePage_task {
+  @apply flex min-h-0 flex-1;
+  max-height: calc((8.75rem * 5) + (0.75rem * 4));
+}
+
+.HomePage_task :global([data-slot="scroll-area-viewport"]) {
+  @apply pr-2;
+}
+
+.HomePage_task :global([data-slot="scroll-area-scrollbar"][data-orientation="vertical"]) {
+  @apply ml-1 w-2.5 pl-0.5;
+}
+
+.HomePage_task :global([data-slot="scroll-area-thumb"]) {
+  @apply bg-mid hover:bg-muted;
+}
+
+.HomePage_taskList {
+  @apply flex min-h-0 flex-col gap-2.5 pr-3;
+}
+
+.HomePage_taskCard {
+  @apply dark:bg-surface dark:border-border dark:shadow-card flex min-h-[7.75rem] flex-col rounded-[0.95rem] border px-3 py-3 md:px-3.5 md:py-3.5;
+}
+
+.HomePage_taskTitle {
+  @apply dark:text-primary text-[0.88rem] leading-[1.35] font-semibold md:text-[1.05rem] md:leading-[1.4];
+}
+
+.HomePage_taskDesc {
+  @apply text-secondary mt-2 text-[0.72rem] leading-5 md:text-[0.82rem];
+}
+
+.HomePage_taskProj {
+  @apply text-label text-[0.62rem] font-semibold tracking-[0.10em] uppercase md:text-[0.68rem];
+}
+
+.HomePage_taskFooter {
+  @apply mt-auto flex items-end justify-between gap-3 pt-4 md:pt-5;
+}
+
+.HomePage_taskExpDate {
+  @apply text-muted dark:text-muted text-[0.68rem] font-medium md:text-[0.78rem];
+}

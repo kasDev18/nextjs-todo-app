@@ -19,7 +19,7 @@
   --card-bg: #f4f6f8;
   --input-bg: #eef1f5;
   --subtle: rgba(0, 0, 0, 0.06);
-  --mid: rgba(0, 0, 0, 0.10);
+  --mid: rgba(0, 0, 0, 0.1);
 
   --text-primary: #0f172a;
   --text-secondary: #475569;
@@ -62,7 +62,7 @@
 
   --bg: #080c12;
   --fg: #eef2ff;
-  --border-val: rgba(255, 255, 255, 0.10);
+  --border-val: rgba(255, 255, 255, 0.1);
   --destructive-val: #f43f5e;
 
   --shadow-card-val: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 32px rgba(0, 0, 0, 0.3);
