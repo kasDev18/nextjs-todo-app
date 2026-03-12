@@ -27,7 +27,7 @@
 }
 
 .SignIn_socialBtn {
-  @apply bg-card text-secondary hover:text-primary rounded-md p-[0.688rem] text-sm font-medium duration-200;
+  @apply border-subtle bg-input text-secondary hover:text-primary hover:bg-card rounded-md border p-[0.688rem] text-sm font-medium duration-200;
 }
 
 .SignIn_orRow {

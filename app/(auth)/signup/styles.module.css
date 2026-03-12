@@ -6,7 +6,7 @@
 }
 
 .SignUp_content {
-  @apply z-1 max-w-[22.5rem] pb-5 md:pb-0;
+  @apply z-1 w-full max-w-[22.5rem] pb-5 md:pb-0;
 }
 
 .SignUp_contentHeader {
@@ -27,15 +27,11 @@
 }
 
 .SignUp_socialBtn {
-  @apply rounded-md p-[0.688rem] text-sm font-medium duration-200;
+  @apply border-border bg-input text-secondary hover:text-primary rounded-md border p-[0.688rem] text-sm font-medium duration-200;
 }
 
-.SignUp_socialBtn___dark {
-  @apply bg-card text-secondary hover:text-primary;
-}
-
-.SignUp_socialBtn___light {
-  @apply bg-secondary/10 hover:bg-secondary/20;
+.SignUp_socialBtn:hover {
+  @apply bg-card;
 }
 
 .SignUp_orRow {
@@ -58,7 +54,7 @@
 }
 
 .SignUp_fieldInput {
-  @apply bg-input border-subtle text-primary w-full rounded-md border p-3 text-sm transition-all duration-200;
+  @apply bg-input border-border text-primary w-full rounded-md border p-3 text-sm transition-all duration-200;
 }
 
 .SignUp_fieldInput::placeholder {

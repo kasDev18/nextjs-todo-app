@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Syne, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { cn } from "@/lib/utils";
 
 const syne = Syne({
   variable: "--font-display",
@@ -27,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${syne.variable} ${instrumentSans.variable} antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={cn(syne.variable, instrumentSans.variable, "antialiased")}
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">
             <Header />
