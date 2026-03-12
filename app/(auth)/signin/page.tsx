@@ -14,13 +14,11 @@ import styles from "./styles.module.css";
 import { cn } from "@/lib/utils";
 import { signInSchema, type SignInFormData } from "@/lib/validations/auth";
 import { signIn } from "@/lib/auth-client";
-import { useTheme } from "next-themes";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
-  const { resolvedTheme } = useTheme();
 
   const {
     register,
@@ -178,10 +176,7 @@ export default function SignInPage() {
             <Checkbox
               id="kmsi-checkbox"
               name="kmsi-checkbox"
-              className={cn(
-                styles.SignIn_checkboxInput,
-                resolvedTheme === "dark" ? "border-white/50" : "border-black/50",
-              )}
+              className={cn(styles.SignIn_checkboxInput)}
             />
             <Label htmlFor="kmsi-checkbox" className={styles.SignIn_checkboxLabel}>
               Keep me signed in
