@@ -1,46 +1,36 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
-import styles from "./styles.module.css";
-import { BOARD_COLUMNS } from "./constants";
-import { Separator } from "@/components/ui/separator";
+import type { BoardColumn } from "@/app/(home)/components/constants";
+import { getTasksAction } from "@/app/(home)/actions";
+import { TaskBoard } from "@/app/(home)/components/task-board";
+import { COLUMNS } from "@/app/(home)/components/constants";
+import type { Metadata } from "next";
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: "Taskflow - Task Board",
+  description: "Track work across To Do, In Progress, and Done lanes with a focused task board.",
+  icons: "/icon.svg",
+};
+
+export default async function HomePage() {
+  const tasks = await getTasksAction();
+
+  const columns: BoardColumn[] = COLUMNS.map(({ title, category }) => {
+    const filtered = tasks
+      .filter((t) => t.category === category)
+      .map((t) => ({
+        id: t.id,
+        title: t.title,
+        description: t.description,
+        dueDate: t.dueDate.toISOString(),
+        project: t.project,
+        priority: t.priority,
+      }));
+
+    return { title, category, count: filtered.length, tasks: filtered };
+  });
+
   return (
-    <main className={cn("animate-rise", styles.HomePage)}>
-      <section className={styles.HomePage_Board} aria-label="Task board columns">
-        {BOARD_COLUMNS.map((column) => {
-          return (
-            <article key={column.title} className={styles.HomePage_col}>
-              <div className={styles.HomePage_colHeader}>
-                <div className={styles.HomePage_titleRow} data-category={column.category}>
-                  <h2 className={styles.HomePage_title} data-category={column.category}>
-                    {column.title}
-                  </h2>
-                </div>
-
-                <span className={styles.HomePage_colCount}>{column.count}</span>
-              </div>
-              <Separator className={styles.HomePage_separator} />
-
-              <ScrollArea className={styles.HomePage_task}>
-                <div className={styles.HomePage_taskList}>
-                  {column.tasks.map((task) => (
-                    <article key={task.id} className={styles.HomePage_taskCard}>
-                      <h3 className={styles.HomePage_taskTitle}>{task.title}</h3>
-                      <p className={styles.HomePage_taskDesc}>{task.description}</p>
-
-                      <div className={styles.HomePage_taskFooter}>
-                        <span className={styles.HomePage_taskProj}>{task.project}</span>
-                        <span className={styles.HomePage_taskExpDate}>{task.dueDate}</span>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </ScrollArea>
-            </article>
-          );
-        })}
-      </section>
+    <main className="animate-rise min-h-[calc(100vh-5rem)] px-2 md:px-6">
+      <TaskBoard columns={columns} />
     </main>
   );
 }

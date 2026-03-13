@@ -18,6 +18,10 @@
   @apply h-4 w-4 fill-none stroke-white stroke-2;
 }
 
+.logoIcon :global(img) {
+  @apply h-4 w-4;
+}
+
 .logoName {
   @apply text-primary text-lg font-bold tracking-wide;
   font-family: var(--font-display);
