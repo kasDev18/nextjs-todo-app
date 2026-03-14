@@ -5,9 +5,15 @@ const AUTH_ROUTES = new Set(["/signin", "/signup"]);
 const DEFAULT_REDIRECT_PATH = "/";
 
 export default async function middleware(request: NextRequest): Promise<NextResponse> {
+  const { pathname } = request.nextUrl;
+
+  // Never redirect API requests, especially Better Auth endpoints.
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
+
   const sessionToken = await getSessionCookie(request);
   const isAuthenticated = Boolean(sessionToken);
-  const { pathname } = request.nextUrl;
   const isAuthRoute = AUTH_ROUTES.has(pathname);
 
   if (isAuthRoute && isAuthenticated) {

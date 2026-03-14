@@ -49,7 +49,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className={cn("animate-rise", styles.SignIn)}>
+    <main className={cn("animate-rise", styles.SignIn)}>
       <div className={styles.SignIn_content}>
         <div className={styles.SignIn_contentHeader}>
           <div className={styles.SignIn_contentHeaderTitle}>
@@ -201,6 +201,6 @@ export default function SignInPage() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
