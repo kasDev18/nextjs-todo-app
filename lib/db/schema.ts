@@ -1,4 +1,4 @@
-import { pgTable, varchar, boolean, timestamp, text } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, varchar, boolean, timestamp, text } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: varchar("id", { length: 255 }).primaryKey(),
@@ -34,8 +34,27 @@ export const accounts = pgTable("accounts", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const priorityEnum = pgEnum("priority", ["low", "medium", "high", "critical"]);
+export const categoryEnum = pgEnum("category", ["todo", "inProgress", "done"]);
+
+export const tasks = pgTable("tasks", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  userId: varchar("user_id", { length: 255 })
+    .references(() => users.id)
+    .notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  project: varchar("project", { length: 255 }).notNull(),
+  dueDate: timestamp("due_date").notNull(),
+  priority: priorityEnum("priority").notNull(),
+  category: categoryEnum("category").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const schema = {
   users,
   sessions,
   accounts,
+  tasks,
 };

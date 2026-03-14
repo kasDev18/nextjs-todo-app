@@ -49,7 +49,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className={cn("animate-rise", styles.SignIn)}>
+    <main className={cn("animate-rise", styles.SignIn)}>
       <div className={styles.SignIn_content}>
         <div className={styles.SignIn_contentHeader}>
           <div className={styles.SignIn_contentHeaderTitle}>
@@ -172,11 +172,16 @@ export default function SignInPage() {
             )}
           </Field>
 
-          <div className={styles.SignIn_checkbox}>
-            <Label className="text-secondary text-sm">
-              <Checkbox className="border-white/50" /> Keep me signed in
+          <Field orientation="horizontal" className={styles.SignIn_checkbox}>
+            <Checkbox
+              id="kmsi-checkbox"
+              name="kmsi-checkbox"
+              className={cn(styles.SignIn_checkboxInput)}
+            />
+            <Label htmlFor="kmsi-checkbox" className={styles.SignIn_checkboxLabel}>
+              Keep me signed in
             </Label>
-          </div>
+          </Field>
 
           <Button
             variant="default"
@@ -196,6 +201,6 @@ export default function SignInPage() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

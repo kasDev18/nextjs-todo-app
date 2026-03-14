@@ -2,11 +2,11 @@
 @reference "../../../app/globals.css";
 
 .SignUp {
-  @apply bg-deep relative flex min-h-screen items-center justify-center gap-10 px-10 py-12;
+  @apply bg-deep relative flex items-center justify-center gap-10 px-5 md:h-[calc(100vh-6.25rem)];
 }
 
 .SignUp_content {
-  @apply z-1 w-full max-w-[360px];
+  @apply z-1 w-full max-w-[22.5rem] pb-5 md:pb-0;
 }
 
 .SignUp_contentHeader {
@@ -27,7 +27,11 @@
 }
 
 .SignUp_socialBtn {
-  @apply bg-card text-secondary hover:text-primary rounded-md p-[11px] text-sm font-medium duration-200;
+  @apply border-border bg-input text-secondary hover:text-primary rounded-md border p-[0.688rem] text-sm font-medium duration-200;
+}
+
+.SignUp_socialBtn:hover {
+  @apply bg-card;
 }
 
 .SignUp_orRow {
@@ -50,7 +54,7 @@
 }
 
 .SignUp_fieldInput {
-  @apply bg-input border-subtle text-primary w-full rounded-md border p-3 text-sm transition-all duration-200;
+  @apply bg-input border-border text-primary w-full rounded-md border p-3 text-sm transition-all duration-200;
 }
 
 .SignUp_fieldInput::placeholder {
