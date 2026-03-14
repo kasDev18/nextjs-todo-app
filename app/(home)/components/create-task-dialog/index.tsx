@@ -22,7 +22,7 @@ import type { BoardColumn } from "@/app/(home)/components/constants";
 import styles from "./styles.module.css";
 import { createTaskAction } from "@/app/(home)/actions";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, getMinDueDate } from "@/lib/utils";
 
 const CATEGORY_LABELS: Record<BoardColumn["category"], string> = {
   todo: "To Do",
@@ -33,17 +33,6 @@ const CATEGORY_LABELS: Record<BoardColumn["category"], string> = {
 type CreateTaskDialogProps = {
   defaultCategory: BoardColumn["category"];
 };
-
-function getMinDueDate() {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const year = tomorrow.getFullYear();
-  const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
-  const day = String(tomorrow.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
 
 export function CreateTaskDialog({ defaultCategory }: CreateTaskDialogProps) {
   const [open, setOpen] = useState(false);

@@ -8,7 +8,7 @@ import { headers } from "next/headers";
 export const auth = betterAuth({
   appName: "NextJS Todo App",
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL || process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL,
   basePath: "/api/auth",
   trustedOrigins: [process.env.BASE_URL, process.env.NEXT_PUBLIC_BASE_URL].filter(
     (origin): origin is string => Boolean(origin),
