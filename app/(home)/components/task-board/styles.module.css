@@ -105,3 +105,7 @@
 .TaskBoard_taskExpDate {
   @apply text-[0.68rem] font-medium md:text-[0.78rem];
 }
+
+.TaskForm_addTaskButton {
+  @apply text-muted bg-subtle/50 hover:bg-subtle border-border dark:border-border dark:text-muted mt-1 flex w-full items-center gap-2 rounded-lg border p-3;
+}
