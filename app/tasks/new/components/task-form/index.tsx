@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { PlusIcon, XIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { createTaskSchema, type CreateTaskFormData } from "@/lib/validations/task";
 import styles from "./styles.module.css";
 import { createTaskAction } from "@/app/(home)/actions";
@@ -15,7 +15,7 @@ import { cn, getMinDueDate } from "@/lib/utils";
 import { CATEGORY_LABELS } from "../constants";
 import type { TaskFormProps } from "../constants";
 
-export function TaskForm({ defaultCategory }: TaskFormProps) {
+export function TaskForm({ defaultCategory, assigneeName }: TaskFormProps) {
   const router = useRouter();
   const minDueDate = getMinDueDate();
 
@@ -144,6 +144,16 @@ export function TaskForm({ defaultCategory }: TaskFormProps) {
               >
                 {CATEGORY_LABELS[defaultCategory]}
               </span>
+            </div>
+          </div>
+
+          <div className={styles.TaskForm_metaField}>
+            <span className={styles.TaskForm_metaFieldText}>Assignee</span>
+            <div
+              className={cn(styles.TaskForm_inputShell, "cursor-not-allowed")}
+              aria-disabled={true}
+            >
+              <span className={styles.TaskForm_assigneeName}>{assigneeName}</span>
             </div>
           </div>
         </div>

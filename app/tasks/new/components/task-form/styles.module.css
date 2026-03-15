@@ -90,6 +90,10 @@
   @apply text-muted block px-3 py-2.5 text-[0.8125rem] font-medium;
 }
 
+.TaskForm_assigneeName {
+  @apply text-secondary block px-3 py-2.5 text-[0.8125rem] font-medium;
+}
+
 .TaskForm_catBadge[data-category="todo"] {
   @apply text-secondary;
 }

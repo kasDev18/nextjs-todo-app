@@ -45,7 +45,8 @@ export default function SignInPage() {
       return;
     }
 
-    router.push("/");
+    router.replace("/");
+    router.refresh();
   }
 
   return (

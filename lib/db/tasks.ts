@@ -6,6 +6,9 @@ import { buildProjectCode } from "@/lib/utils";
 
 export type InsertTask = typeof tasks.$inferInsert;
 export type SelectTask = typeof tasks.$inferSelect;
+export type SelectTaskWithAssignee = SelectTask & {
+  assigneeName: string;
+};
 
 export async function createTask(task: InsertTask): Promise<SelectTask> {
   return db.transaction(async (tx) => {
@@ -93,4 +96,29 @@ export async function getAllTasks(): Promise<SelectTask[]> {
   return db.query.tasks.findMany({
     orderBy: asc(tasks.dueDate),
   });
+}
+
+export async function getTasksByUserId(userId: string): Promise<SelectTask[]> {
+  return db.query.tasks.findMany({
+    where: eq(tasks.userId, userId),
+    orderBy: asc(tasks.dueDate),
+  });
+}
+
+export async function getAllTasksWithAssignee(): Promise<SelectTaskWithAssignee[]> {
+  const taskRows = await db.query.tasks.findMany({
+    with: {
+      user: {
+        columns: {
+          name: true,
+        },
+      },
+    },
+    orderBy: asc(tasks.dueDate),
+  });
+
+  return taskRows.map(({ user, ...task }) => ({
+    ...task,
+    assigneeName: user?.name ?? "Unknown User",
+  }));
 }

@@ -28,4 +28,5 @@ export type Task = {
   dueDate: string;
   project: string;
   priority: Priority;
+  assigneeLabel: string;
 };

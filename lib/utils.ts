@@ -29,3 +29,14 @@ export function getMinDueDate() {
 
   return `${year}-${month}-${day}`;
 }
+
+export function getInitials(name: string) {
+  const normalizedName = name.trim();
+  const hash = normalizedName.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const color = `hsl(${hash % 360}, 70%, 45%)`;
+
+  return {
+    initials: normalizedName.split(" ")[0][0]?.toUpperCase() ?? "",
+    color,
+  };
+}

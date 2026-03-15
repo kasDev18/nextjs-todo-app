@@ -8,6 +8,7 @@ import styles from "./styles.module.css";
 import { isExpired, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
+import { getInitials } from "@/lib/utils";
 
 type TaskBoardProps = {
   columns: BoardColumn[];
@@ -46,6 +47,7 @@ export function TaskBoard({ columns }: TaskBoardProps) {
                   day: "numeric",
                   timeZone: "UTC",
                 });
+                const { initials, color } = getInitials(task.assigneeLabel);
 
                 return (
                   <article key={task.id} className={styles.TaskBoard_card}>
@@ -55,13 +57,23 @@ export function TaskBoard({ columns }: TaskBoardProps) {
                     <p className={styles.TaskBoard_cardDesc}>{task.description}</p>
 
                     <div className={styles.TaskBoard_cardFooter}>
-                      <span
-                        className={styles.TaskBoard_cardPrio}
-                        data-priority={task.priority}
-                        aria-label={`Priority: ${PRIORITY_LABELS[task.priority]}`}
-                      >
-                        {PRIORITY_LABELS[task.priority]}
-                      </span>
+                      <div className={styles.TaskBoard_cardMeta}>
+                        <span
+                          className={styles.TaskBoard_cardAssignee}
+                          aria-label={`Assignee: ${task.assigneeLabel}`}
+                          title={task.assigneeLabel}
+                          style={{ backgroundColor: color, borderColor: color }}
+                        >
+                          {initials}
+                        </span>
+                        <span
+                          className={styles.TaskBoard_cardPrio}
+                          data-priority={task.priority}
+                          aria-label={`Priority: ${PRIORITY_LABELS[task.priority]}`}
+                        >
+                          {PRIORITY_LABELS[task.priority]}
+                        </span>
+                      </div>
                       <span
                         className={cn(
                           styles.TaskBoard_taskExpDate,

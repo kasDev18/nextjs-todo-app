@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { Category } from "@/app/(home)/components/constants";
+import { getUserFromSession } from "@/lib/auth";
 import { TaskForm } from "./components/task-form";
 import styles from "./components/task-form/styles.module.css";
 
@@ -27,11 +28,13 @@ type CreateTaskPageProps = {
 export default async function CreateTaskPage({ searchParams }: CreateTaskPageProps) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const defaultCategory = getDefaultCategory(resolvedSearchParams?.category);
+  const session = await getUserFromSession();
+  const assigneeName = session?.user?.name ?? "";
 
   return (
     <main className="animate-rise min-h-[calc(100vh-5rem)] px-2 md:px-6">
       <section className={styles.TaskForm_page}>
-        <TaskForm defaultCategory={defaultCategory} />
+        <TaskForm defaultCategory={defaultCategory} assigneeName={assigneeName} />
       </section>
     </main>
   );
