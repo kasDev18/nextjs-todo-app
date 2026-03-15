@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { CreateTaskDialog } from "@/app/(home)/components/create-task-dialog";
 import type { BoardColumn, Priority } from "@/app/(home)/components/constants";
 import styles from "./styles.module.css";
 import { isExpired, cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "lucide-react";
 
 type TaskBoardProps = {
   columns: BoardColumn[];
@@ -73,7 +75,12 @@ export function TaskBoard({ columns }: TaskBoardProps) {
                 );
               })}
 
-              <CreateTaskDialog defaultCategory={column.category} />
+              <Button asChild className={styles.TaskForm_addTaskButton}>
+                <Link href={`/tasks/new?category=${column.category}`}>
+                  <PlusIcon />
+                  <span className={styles.TaskForm_addTaskText}>Add Task</span>
+                </Link>
+              </Button>
             </div>
           </ScrollArea>
         </article>
