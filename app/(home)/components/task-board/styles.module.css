@@ -82,6 +82,14 @@
   @apply text-muted border-border bg-subtle/60 inline-flex items-center rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold tracking-[0.04em] md:text-[0.72rem];
 }
 
+.TaskBoard_cardMeta {
+  @apply flex flex-col gap-4;
+}
+
+.TaskBoard_cardAssignee {
+  @apply inline-flex size-8 items-center justify-center rounded-full border text-[0.72rem] font-semibold tracking-[0.08em] text-white;
+}
+
 .TaskBoard_cardPrio[data-priority="low"] {
   @apply border-green/20 bg-green/10 text-green;
 }

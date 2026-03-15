@@ -11,9 +11,17 @@ import {
 
 let isTaskMonitorStarted = false;
 
-export function getTaskNotifications(tasks: SelectTask[], now = new Date()): TaskNotification[] {
+export function getTaskNotifications(
+  tasks: SelectTask[],
+  userId?: string,
+  now = new Date(),
+): TaskNotification[] {
   return tasks
     .flatMap<TaskNotification>((task) => {
+      if (userId && task.userId !== userId) {
+        return [];
+      }
+
       const dueDate = new Date(task.dueDate);
       const status = getTaskStatus(dueDate, now);
 

@@ -72,7 +72,6 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   accounts: many(accounts),
   tasks: many(tasks),
-  taskReminders: many(taskReminders),
 }));
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -101,10 +100,6 @@ export const taskRemindersRelations = relations(taskReminders, ({ one }) => ({
   task: one(tasks, {
     fields: [taskReminders.taskId],
     references: [tasks.id],
-  }),
-  user: one(users, {
-    fields: [taskReminders.emailSentTo],
-    references: [users.email],
   }),
 }));
 

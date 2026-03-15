@@ -4,8 +4,8 @@ import { getUserFromSession } from "@/lib/auth";
 import {
   createTask,
   generateUniqueProjectCode,
-  getAllTasks,
-  type SelectTask,
+  getAllTasksWithAssignee,
+  type SelectTaskWithAssignee,
 } from "@/lib/db/tasks";
 import { createTaskSchema } from "@/lib/validations/task";
 import crypto from "crypto";
@@ -62,7 +62,7 @@ export async function createTaskAction(formData: {
   }
 }
 
-export async function getTasksAction(): Promise<SelectTask[]> {
+export async function getTasksAction(): Promise<SelectTaskWithAssignee[]> {
   try {
     const session = await getUserFromSession();
 
@@ -70,7 +70,7 @@ export async function getTasksAction(): Promise<SelectTask[]> {
       throw new Error("You must be signed in to fetch tasks.");
     }
 
-    return await getAllTasks();
+    return await getAllTasksWithAssignee();
   } catch (err) {
     console.error("Failed to fetch tasks:", err);
     return [];

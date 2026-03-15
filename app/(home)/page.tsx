@@ -23,6 +23,7 @@ export default async function HomePage() {
         dueDate: t.dueDate.toISOString(),
         project: t.project,
         priority: t.priority,
+        assigneeLabel: t.assigneeName,
       }));
 
     return { title, category, count: filtered.length, tasks: filtered };

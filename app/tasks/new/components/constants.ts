@@ -8,4 +8,5 @@ export const CATEGORY_LABELS: Record<BoardColumn["category"], string> = {
 
 export type TaskFormProps = {
   defaultCategory: BoardColumn["category"];
+  assigneeName: string;
 };

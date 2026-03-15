@@ -1,9 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Client } from "pg";
 
-const DEFAULT_SEED_USER_NAME = "Demo User";
-const DEFAULT_SEED_USER_EMAIL = "demo@example.com";
-
 const seedTemplates = [
   {
     title: "Backlog grooming for onboarding flow",
@@ -166,8 +163,8 @@ function createDueDate(dueInDays) {
 }
 
 async function getOrCreateSeedUser(client) {
-  const targetEmail = process.env.SEED_USER_EMAIL?.trim() || DEFAULT_SEED_USER_EMAIL;
-  const targetName = process.env.SEED_USER_NAME?.trim() || DEFAULT_SEED_USER_NAME;
+  const targetEmail = "kascatindoy173@gmail.com";
+  const targetName = "Kevin Sanchez";
 
   const { rows: existingUsers } = await client.query(
     "select id, name, email from users where lower(email) = lower($1) limit 1",
