@@ -1,0 +1,1 @@
+ALTER TABLE "task_reminders" ADD COLUMN "is_opened" boolean DEFAULT false;

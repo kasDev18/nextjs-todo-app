@@ -22,6 +22,41 @@
       "when": 1773381764737,
       "tag": "0002_closed_mentor",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1773489051737,
+      "tag": "0003_right_alex_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1773492951544,
+      "tag": "0004_bitter_mole_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1773493087836,
+      "tag": "0005_smart_fenris",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1773501848063,
+      "tag": "0006_hesitant_nicolaos",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1773549092857,
+      "tag": "0007_aberrant_firestar",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "task_reminders" ALTER COLUMN "email_sent_to" DROP DEFAULT;
