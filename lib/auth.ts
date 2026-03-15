@@ -21,6 +21,7 @@ export const auth = betterAuth({
       session: schema.sessions, // Changed from sessions to session
       account: schema.accounts, // Changed from accounts to account
       task: schema.tasks, // Changed from tasks to task
+      taskReminder: schema.taskReminders, // Changed from taskReminders to taskReminder
     },
   }),
   emailVerification: {

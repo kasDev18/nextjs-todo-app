@@ -36,13 +36,19 @@ export async function createTaskAction(formData: {
     const { title, description, dueDate, priority, category } = parsed.data;
     const project = await generateUniqueProjectCode();
 
+    const now = new Date();
+
+    const dueDateWithCurrentTime = new Date(
+      `${dueDate}T${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")}:${String(now.getUTCSeconds()).padStart(2, "0")}.${String(now.getUTCMilliseconds()).padStart(3, "0")}Z`,
+    );
+
     const task = await createTask({
       id: crypto.randomUUID(),
       userId: session.user.id,
       title,
       description,
+      dueDate: dueDateWithCurrentTime,
       project,
-      dueDate: new Date(`${dueDate}T12:00:00.000Z`),
       priority: priority as Priority,
       category: category as Category,
     });

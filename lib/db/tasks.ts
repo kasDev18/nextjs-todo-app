@@ -1,5 +1,6 @@
+import crypto from "crypto";
 import { db } from "./index";
-import { tasks } from "./schema";
+import { taskReminders, tasks } from "./schema";
 import { eq, asc } from "drizzle-orm";
 import { buildProjectCode } from "@/lib/utils";
 
@@ -7,13 +8,72 @@ export type InsertTask = typeof tasks.$inferInsert;
 export type SelectTask = typeof tasks.$inferSelect;
 
 export async function createTask(task: InsertTask): Promise<SelectTask> {
-  const [created] = await db.insert(tasks).values(task).returning();
-  return created;
+  return db.transaction(async (tx) => {
+    const [created] = await tx.insert(tasks).values(task).returning();
+
+    await tx.insert(taskReminders).values({
+      id: crypto.randomUUID(),
+      taskId: created.id,
+    });
+
+    return created;
+  });
+}
+
+export async function updateTaskReminderStatus(
+  taskId: string,
+  status: "nearlyExpired" | "overdue",
+): Promise<boolean> {
+  const existing = await db.query.taskReminders.findFirst({
+    where: eq(taskReminders.taskId, taskId),
+    columns: {
+      id: true,
+      notifExpReminderSent: true,
+      notifOverdueReminderSent: true,
+    },
+  });
+
+  const reminderUpdates =
+    status === "nearlyExpired"
+      ? {
+          notifExpReminderSent: true,
+        }
+      : {
+          notifOverdueReminderSent: true,
+        };
+
+  if (!existing) {
+    await db.insert(taskReminders).values({
+      id: crypto.randomUUID(),
+      taskId,
+      ...reminderUpdates,
+    });
+
+    return true;
+  }
+
+  const alreadyUpdated =
+    status === "nearlyExpired" ? existing.notifExpReminderSent : existing.notifOverdueReminderSent;
+
+  if (alreadyUpdated) {
+    return false;
+  }
+
+  await db
+    .update(taskReminders)
+    .set({
+      ...reminderUpdates,
+      updatedAt: new Date(),
+    })
+    .where(eq(taskReminders.id, existing.id));
+
+  return true;
 }
 
 async function getTaskByProject(project: string): Promise<SelectTask | undefined> {
-  const [task] = await db.select().from(tasks).where(eq(tasks.project, project)).limit(1);
-  return task;
+  return db.query.tasks.findFirst({
+    where: eq(tasks.project, project),
+  });
 }
 
 export async function generateUniqueProjectCode(): Promise<string> {
@@ -30,5 +90,7 @@ export async function generateUniqueProjectCode(): Promise<string> {
 }
 
 export async function getAllTasks(): Promise<SelectTask[]> {
-  return db.select().from(tasks).orderBy(asc(tasks.dueDate));
+  return db.query.tasks.findMany({
+    orderBy: asc(tasks.dueDate),
+  });
 }
