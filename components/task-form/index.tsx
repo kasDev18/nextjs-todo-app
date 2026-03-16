@@ -29,7 +29,9 @@ export function TaskForm({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<CreateTaskFormData>({
-    resolver: zodResolver(createTaskSchema),
+    // Work around a known zodResolver typing bug with zod 4.3.x on clean installs.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(createTaskSchema as any),
     defaultValues: initialValues,
   });
 

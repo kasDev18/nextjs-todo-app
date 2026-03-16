@@ -24,7 +24,9 @@ export default function SignUpPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignUpFormData>({
-    resolver: zodResolver(signUpSchema),
+    // Work around a known zodResolver typing bug with zod 4.3.x on clean installs.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(signUpSchema as any),
     defaultValues: {
       name: "",
       email: "",

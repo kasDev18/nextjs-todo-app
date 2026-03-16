@@ -25,7 +25,9 @@ export default function SignInPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema),
+    // Work around a known zodResolver typing bug with zod 4.3.x on clean installs.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(signInSchema as any),
     defaultValues: {
       email: "",
       password: "",
