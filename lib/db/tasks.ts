@@ -166,6 +166,28 @@ export async function updateTask(
 }
 
 /*
+  Updates only the category for a task.
+  @param taskId - The ID of the task to update.
+  @param category - The next category for the task.
+  @returns The updated task, or undefined if no task exists.
+*/
+export async function updateTaskCategory(
+  taskId: string,
+  category: InsertTask["category"],
+): Promise<SelectTask | undefined> {
+  const [updated] = await db
+    .update(tasks)
+    .set({
+      category,
+      updatedAt: new Date(),
+    })
+    .where(eq(tasks.id, taskId))
+    .returning();
+
+  return updated;
+}
+
+/*
   Deletes a task and its reminder records.
   @param taskId - The ID of the task to delete.
   @returns True when the task existed and was deleted, false otherwise.
