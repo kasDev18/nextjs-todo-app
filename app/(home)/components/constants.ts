@@ -4,7 +4,7 @@ import type { SelectTask } from "@/lib/db/tasks";
 export type Category = (typeof categoryEnum.enumValues)[number];
 export type Priority = (typeof priorityEnum.enumValues)[number];
 
-export type CreateTaskResult =
+export type TaskMutationResult =
   | { success: true; task: SelectTask }
   | { success: false; error: string };
 
@@ -29,4 +29,5 @@ export type Task = {
   project: string;
   priority: Priority;
   assigneeLabel: string;
+  canEdit: boolean;
 };

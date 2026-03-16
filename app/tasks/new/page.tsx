@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import type { Category } from "@/app/(home)/components/constants";
+import { TaskForm } from "@/components/task-form";
+import styles from "@/components/task-form/styles.module.css";
 import { getUserFromSession } from "@/lib/auth";
-import { TaskForm } from "./components/task-form";
-import styles from "./components/task-form/styles.module.css";
 
 export const metadata: Metadata = {
   title: "Taskflow - Create Task",
@@ -34,7 +34,17 @@ export default async function CreateTaskPage({ searchParams }: CreateTaskPagePro
   return (
     <main className="animate-rise min-h-[calc(100vh-5rem)] px-2 md:px-6">
       <section className={styles.TaskForm_page}>
-        <TaskForm defaultCategory={defaultCategory} assigneeName={assigneeName} />
+        <TaskForm
+          mode="create"
+          assigneeName={assigneeName}
+          initialValues={{
+            title: "",
+            description: "",
+            dueDate: "",
+            priority: "medium",
+            category: defaultCategory,
+          }}
+        />
       </section>
     </main>
   );

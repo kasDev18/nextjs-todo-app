@@ -52,7 +52,25 @@ export function TaskBoard({ columns }: TaskBoardProps) {
                 return (
                   <article key={task.id} className={styles.TaskBoard_card}>
                     <h3 className={styles.TaskBoard_cardTitle}>
-                      [{task.project}] {task.title}
+                      {task.canEdit ? (
+                        <Link
+                          href={`/tasks/${task.id}/edit`}
+                          className={styles.TaskBoard_cardTitleLink}
+                        >
+                          [{task.project}] {task.title}
+                        </Link>
+                      ) : (
+                        <span
+                          className={cn(
+                            styles.TaskBoard_cardTitleLink,
+                            styles.TaskBoard_cardTitleLinkDisabled,
+                          )}
+                          aria-disabled={true}
+                          title="Only the assignee can edit this task"
+                        >
+                          [{task.project}] {task.title}
+                        </span>
+                      )}
                     </h3>
                     <p className={styles.TaskBoard_cardDesc}>{task.description}</p>
 

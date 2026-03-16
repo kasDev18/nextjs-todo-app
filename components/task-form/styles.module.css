@@ -1,5 +1,5 @@
 @reference "tailwindcss";
-@reference "../../../../globals.css";
+@reference "../../app/globals.css";
 
 .TaskForm_card {
   @apply border-border bg-surface text-primary w-full overflow-hidden rounded-(--r-xl) border p-0 shadow-lg sm:max-w-[38.75rem];
@@ -27,6 +27,10 @@
 
 .TaskForm_subtitle {
   @apply text-muted mt-px text-xs;
+}
+
+.TaskForm_projectCode {
+  @apply text-label inline-flex w-fit rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.08em] uppercase;
 }
 
 .TaskForm_divider {

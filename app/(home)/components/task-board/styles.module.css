@@ -74,6 +74,14 @@
   @apply dark:text-primary text-[0.88rem] leading-[1.35] font-semibold md:text-[1.05rem] md:leading-[1.4];
 }
 
+.TaskBoard_cardTitleLink {
+  @apply decoration-accent underline-offset-4 transition hover:underline;
+}
+
+.TaskBoard_cardTitleLinkDisabled {
+  @apply text-muted cursor-not-allowed no-underline opacity-70;
+}
+
 .TaskBoard_cardDesc {
   @apply text-secondary mt-2 text-[0.72rem] leading-5 md:text-[0.82rem];
 }
