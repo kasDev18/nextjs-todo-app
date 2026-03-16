@@ -2,12 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { createTaskAction, updateTaskAction } from "@/app/tasks/actions";
+import { createTaskAction, deleteTaskAction, updateTaskAction } from "@/app/tasks/actions";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { DeleteTaskDialog } from "@/components/delete-task-dialog";
 import { cn, getMinDueDate } from "@/lib/utils";
 import { createTaskSchema, type CreateTaskFormData } from "@/lib/validations/task";
 import { CATEGORY_LABELS, type TaskFormProps } from "./constants";
@@ -23,6 +25,8 @@ export function TaskForm({
   const router = useRouter();
   const minDueDate = getMinDueDate();
   const isEditMode = mode === "edit";
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     register,
@@ -67,6 +71,35 @@ export function TaskForm({
 
   function handleCancel() {
     router.push("/");
+  }
+
+  async function handleDelete(): Promise<boolean> {
+    if (!taskId) {
+      return false;
+    }
+
+    setIsDeleting(true);
+
+    try {
+      const result = await deleteTaskAction(taskId);
+
+      if (!result.success) {
+        console.error("Failed to delete task:", result.error);
+        toast.error(result.error);
+        return false;
+      }
+
+      setIsDeleteDialogOpen(false);
+      toast.success("Task deleted successfully");
+      router.replace("/");
+      return true;
+    } catch (error) {
+      console.error("Failed to delete task:", error);
+      toast.error("Something went wrong. Please try again.");
+      return false;
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   return (
@@ -173,18 +206,52 @@ export function TaskForm({
           </div>
         </div>
         <div className={styles.TaskForm_footer}>
-          <button type="button" className={styles.TaskForm_cancelBtn} onClick={handleCancel}>
-            Cancel
-          </button>
-          <button type="submit" className={styles.TaskForm_submitBtn} disabled={isSubmitting}>
-            {isSubmitting
-              ? isEditMode
-                ? "Saving..."
-                : "Creating..."
-              : isEditMode
-                ? "Save Changes"
-                : "Create Task"}
-          </button>
+          {isEditMode && taskId ? (
+            <>
+              <button
+                type="button"
+                className={styles.TaskForm_deleteBtn}
+                disabled={isSubmitting || isDeleting}
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                Delete Task
+              </button>
+              <DeleteTaskDialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                onConfirm={handleDelete}
+                isDeleting={isDeleting}
+                task={{
+                  id: taskId,
+                  title: initialValues.title,
+                  project: projectCode ?? "Task",
+                  dueDate: initialValues.dueDate,
+                  assigneeName,
+                  statusLabel: CATEGORY_LABELS[initialValues.category],
+                }}
+              />
+            </>
+          ) : (
+            <div />
+          )}
+          <div className={styles.TaskForm_footerActions}>
+            <button type="button" className={styles.TaskForm_cancelBtn} onClick={handleCancel}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className={styles.TaskForm_submitBtn}
+              disabled={isSubmitting || isDeleting}
+            >
+              {isSubmitting
+                ? isEditMode
+                  ? "Saving..."
+                  : "Creating..."
+                : isEditMode
+                  ? "Save Changes"
+                  : "Create Task"}
+            </button>
+          </div>
         </div>
       </form>
     </div>

@@ -111,15 +111,23 @@
 }
 
 .TaskForm_footer {
-  @apply border-subtle -mx-6 mt-5 -mb-1 flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4;
+  @apply border-subtle -mx-6 mt-5 -mb-1 flex shrink-0 flex-col gap-3 border-t px-6 py-4 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.TaskForm_footerActions {
+  @apply flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row;
 }
 
 .TaskForm_cancelBtn {
   @apply text-secondary border-subtle hover:bg-accent-glow dark:hover:bg-accent-glow hover:text-primary dark:hover:text-primary hover:border-accent-glow cursor-pointer rounded-(--r-md) border bg-transparent px-4.5 py-2.5 text-[0.8125rem] font-medium transition-all;
 }
 
+.TaskForm_deleteBtn {
+  @apply text-destructive border-destructive/30 hover:bg-destructive/10 hover:border-destructive/50 cursor-pointer rounded-(--r-md) border bg-transparent px-4.5 py-2.5 text-[0.8125rem] font-medium transition-all disabled:pointer-events-none disabled:opacity-50;
+}
+
 .TaskForm_submitBtn {
-  @apply flex cursor-pointer items-center gap-1.5 rounded-(--r-md) border-none px-5 py-2.5 text-[0.8125rem] font-bold tracking-wide text-white transition-all hover:translate-y-px hover:opacity-90 active:translate-y-0;
+  @apply flex cursor-pointer items-center justify-center gap-1.5 rounded-(--r-md) border-none px-5 py-2.5 text-[0.8125rem] font-bold tracking-wide text-white transition-all hover:translate-y-px hover:opacity-90 active:translate-y-0 md:justify-start;
   background: linear-gradient(135deg, #3d82f6 0%, #7c5fe6 100%);
   box-shadow: 0 0.25rem 1.25rem rgba(61, 130, 246, 0.35);
   letter-spacing: 0.03em;

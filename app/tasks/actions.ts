@@ -6,6 +6,7 @@ import { Category, Priority } from "@/app/(home)/components/constants";
 import { getUserFromSession } from "@/lib/auth";
 import {
   createTask,
+  deleteTask,
   generateUniqueProjectCode,
   getTaskById,
   updateTask,
@@ -24,7 +25,12 @@ type TaskActionFormData = {
 
 type TaskMutationResult = { success: true; task: SelectTask } | { success: false; error: string };
 
-function buildDueDateWithCurrentTime(dueDate: string) {
+/*
+  Builds the due date with the current time.
+  @param dueDate - The due date to build.
+  @returns The due date with the current time.
+*/
+function buildDueDateWithCurrentTime(dueDate: string): Date {
   const now = new Date();
 
   return new Date(
@@ -32,6 +38,11 @@ function buildDueDateWithCurrentTime(dueDate: string) {
   );
 }
 
+/*
+  Creates a new task.
+  @param formData - The form data to create the task from.
+  @returns The created task.
+*/
 export async function createTaskAction(formData: TaskActionFormData): Promise<TaskMutationResult> {
   try {
     const session = await getUserFromSession();
@@ -74,6 +85,12 @@ export async function createTaskAction(formData: TaskActionFormData): Promise<Ta
   }
 }
 
+/*
+  Updates a task.
+  @param taskId - The ID of the task to update.
+  @param formData - The form data to update the task from.
+  @returns The updated task.
+*/
 export async function updateTaskAction(
   taskId: string,
   formData: TaskActionFormData,
@@ -122,6 +139,43 @@ export async function updateTaskAction(
     return { success: true, task };
   } catch (err) {
     console.error("Failed to update task:", err);
+    return { success: false, error: "Something went wrong. Please try again." };
+  }
+}
+
+/*
+  Deletes a task.
+  @param taskId - The ID of the task to delete.
+  @returns True when the task existed and was deleted, false otherwise.
+*/
+export async function deleteTaskAction(
+  taskId: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const session = await getUserFromSession();
+
+    if (!session?.user) {
+      return { success: false, error: "You must be signed in to delete a task." };
+    }
+
+    const existingTask = await getTaskById(taskId);
+
+    if (!existingTask || existingTask.userId !== session.user.id) {
+      return { success: false, error: "Task not found." };
+    }
+
+    const deleted = await deleteTask(taskId);
+
+    if (!deleted) {
+      return { success: false, error: "Task not found." };
+    }
+
+    revalidatePath("/");
+    revalidatePath(`/tasks/${taskId}/edit`);
+
+    return { success: true };
+  } catch (err) {
+    console.error("Failed to delete task:", err);
     return { success: false, error: "Something went wrong. Please try again." };
   }
 }
