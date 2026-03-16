@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { BellIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { shortUtcDateFormatter } from "@/lib/formatters";
 import { getTasksByUserId } from "@/lib/db/tasks";
 import { getTaskNotifications } from "@/notifications";
 import {
@@ -15,12 +16,6 @@ import {
 } from "../ui/dropdown-menu";
 import { getUserFromSession } from "@/lib/auth";
 import { EMPTY_HEADER_NOTIFICATIONS, type HeaderNotificationsData } from "./constants";
-
-const dueDateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
 
 export default async function Header() {
   const session = await getUserFromSession();
@@ -102,8 +97,8 @@ export default async function Header() {
                         <p className={styles.Header_ddItemTitle}>{notification.title}</p>
                         <p className={styles.Header_ddItemDesc}>
                           {notification.status === "overdue"
-                            ? `Deadline passed on ${dueDateFormatter.format(notification.dueDate)}`
-                            : `Due by ${dueDateFormatter.format(notification.dueDate)}`}
+                            ? `Deadline passed on ${shortUtcDateFormatter.format(notification.dueDate)}`
+                            : `Due by ${shortUtcDateFormatter.format(notification.dueDate)}`}
                         </p>
                       </div>
                     );

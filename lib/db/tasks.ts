@@ -166,6 +166,23 @@ export async function updateTask(
 }
 
 /*
+  Deletes a task and its reminder records.
+  @param taskId - The ID of the task to delete.
+  @returns True when the task existed and was deleted, false otherwise.
+*/
+export async function deleteTask(taskId: string): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    await tx.delete(taskReminders).where(eq(taskReminders.taskId, taskId));
+
+    const [deleted] = await tx.delete(tasks).where(eq(tasks.id, taskId)).returning({
+      id: tasks.id,
+    });
+
+    return Boolean(deleted);
+  });
+}
+
+/*
   Syncs the task reminder status.
   @param taskId - The ID of the task to sync the reminder status for.
   @param status - The status of the task reminder.

@@ -74,7 +74,9 @@ async function checkTaskDeadlines() {
       const dueDate = new Date(item.dueDate);
       const overdueAt = getOverdueAt(dueDate);
       const status = getTaskStatus(dueDate, now);
-      const didUpdateReminder = await syncTaskReminderStatus(item.id, status, item.reminder);
+      const didUpdateReminder = status
+        ? await syncTaskReminderStatus(item.id, status, item.reminder)
+        : false;
 
       if (status === "overdue") {
         overdueCount += 1;

@@ -70,16 +70,28 @@
   @apply dark:bg-surface dark:border-border dark:shadow-card flex min-h-[7.75rem] flex-col rounded-[0.95rem] border px-3 py-3 md:px-3.5 md:py-3.5;
 }
 
+.TaskBoard_cardHeader {
+  @apply flex items-start justify-between gap-3;
+}
+
 .TaskBoard_cardTitle {
-  @apply dark:text-primary text-[0.88rem] leading-[1.35] font-semibold md:text-[1.05rem] md:leading-[1.4];
+  @apply dark:text-primary min-w-0 flex-1 text-[0.88rem] leading-[1.35] font-semibold md:text-[1.05rem] md:leading-[1.4];
 }
 
 .TaskBoard_cardTitleLink {
   @apply decoration-accent underline-offset-4 transition hover:underline;
 }
 
-.TaskBoard_cardTitleLinkDisabled {
+.TaskBoard_cardTitleLink___disabled {
   @apply text-muted cursor-not-allowed no-underline opacity-70;
+}
+
+.TaskBoard_cardMenuTrigger {
+  @apply text-muted hover:text-primary mt-[-0.125rem] -mr-1;
+}
+
+.TaskBoard_cardMenuCont {
+  @apply min-w-40;
 }
 
 .TaskBoard_cardDesc {
