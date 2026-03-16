@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { createTaskAction, deleteTaskAction, updateTaskAction } from "@/app/tasks/actions";
@@ -15,6 +15,43 @@ import { createTaskSchema, type CreateTaskFormData } from "@/lib/validations/tas
 import { CATEGORY_LABELS, type TaskFormProps } from "./constants";
 import styles from "./styles.module.css";
 
+const TASK_DRAFT_STORAGE_KEY_PREFIX = "taskflow:create-task-draft:";
+
+type DraftSaveState = "idle" | "restored" | "saving" | "saved";
+
+function getTaskDraftStorageKey(category: CreateTaskFormData["category"]) {
+  return `${TASK_DRAFT_STORAGE_KEY_PREFIX}${category}`;
+}
+
+function isStoredTaskDraft(value: unknown): value is CreateTaskFormData {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const draft = value as Partial<Record<keyof CreateTaskFormData, unknown>>;
+
+  return (
+    typeof draft.title === "string" &&
+    typeof draft.description === "string" &&
+    typeof draft.dueDate === "string" &&
+    (draft.priority === "low" ||
+      draft.priority === "medium" ||
+      draft.priority === "high" ||
+      draft.priority === "critical") &&
+    (draft.category === "todo" || draft.category === "inProgress" || draft.category === "done")
+  );
+}
+
+function areTaskValuesEqual(left: CreateTaskFormData, right: CreateTaskFormData) {
+  return (
+    left.title === right.title &&
+    left.description === right.description &&
+    left.dueDate === right.dueDate &&
+    left.priority === right.priority &&
+    left.category === right.category
+  );
+}
+
 export function TaskForm({
   mode,
   assigneeName,
@@ -25,12 +62,34 @@ export function TaskForm({
   const router = useRouter();
   const minDueDate = getMinDueDate();
   const isEditMode = mode === "edit";
+  const isCreateMode = mode === "create";
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [draftSaveState, setDraftSaveState] = useState<DraftSaveState>("idle");
+  const [lastDraftSavedAt, setLastDraftSavedAt] = useState<string | null>(null);
+  const hasLoadedDraftRef = useRef(false);
+
+  const defaultCreateValues = useMemo<CreateTaskFormData>(
+    () => ({
+      title: "",
+      description: "",
+      dueDate: "",
+      priority: "medium",
+      category: initialValues.category,
+    }),
+    [initialValues.category],
+  );
+
+  const draftStorageKey = useMemo(
+    () => getTaskDraftStorageKey(initialValues.category),
+    [initialValues.category],
+  );
 
   const {
     register,
     handleSubmit,
+    reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CreateTaskFormData>({
     // Work around a known zodResolver typing bug with zod 4.3.x on clean installs.
@@ -38,6 +97,97 @@ export function TaskForm({
     resolver: zodResolver(createTaskSchema as any),
     defaultValues: initialValues,
   });
+
+  const [title, description, dueDate, priority] = watch([
+    "title",
+    "description",
+    "dueDate",
+    "priority",
+  ]);
+
+  useEffect(() => {
+    if (!isCreateMode) {
+      return;
+    }
+
+    try {
+      const storedDraft = window.localStorage.getItem(draftStorageKey);
+
+      if (!storedDraft) {
+        setDraftSaveState("idle");
+        return;
+      }
+
+      const parsedDraft: unknown = JSON.parse(storedDraft);
+
+      if (!isStoredTaskDraft(parsedDraft) || parsedDraft.category !== initialValues.category) {
+        window.localStorage.removeItem(draftStorageKey);
+        setDraftSaveState("idle");
+        return;
+      }
+
+      if (!areTaskValuesEqual(parsedDraft, defaultCreateValues)) {
+        reset(parsedDraft);
+        setDraftSaveState("restored");
+      }
+    } catch (error) {
+      console.error("Failed to restore task draft:", error);
+      window.localStorage.removeItem(draftStorageKey);
+      setDraftSaveState("idle");
+    } finally {
+      hasLoadedDraftRef.current = true;
+    }
+  }, [defaultCreateValues, draftStorageKey, initialValues.category, isCreateMode, reset]);
+
+  useEffect(() => {
+    if (!isCreateMode || !hasLoadedDraftRef.current) {
+      return;
+    }
+
+    const nextDraft: CreateTaskFormData = {
+      title: title ?? "",
+      description: description ?? "",
+      dueDate: dueDate ?? "",
+      priority: priority ?? "medium",
+      category: initialValues.category,
+    };
+
+    if (areTaskValuesEqual(nextDraft, defaultCreateValues)) {
+      window.localStorage.removeItem(draftStorageKey);
+      setDraftSaveState("idle");
+      setLastDraftSavedAt(null);
+      return;
+    }
+
+    setDraftSaveState("saving");
+
+    const timeoutId = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(draftStorageKey, JSON.stringify(nextDraft));
+        setDraftSaveState("saved");
+        setLastDraftSavedAt(
+          new Date().toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit",
+          }),
+        );
+      } catch (error) {
+        console.error("Failed to save task draft:", error);
+        setDraftSaveState("idle");
+      }
+    }, 400);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    defaultCreateValues,
+    description,
+    draftStorageKey,
+    dueDate,
+    initialValues.category,
+    isCreateMode,
+    priority,
+    title,
+  ]);
 
   async function onSubmit(data: CreateTaskFormData) {
     const result =
@@ -65,8 +215,22 @@ export function TaskForm({
 
     toast.success(isEditMode ? "Task updated successfully" : "Task created successfully");
 
+    if (isCreateMode) {
+      window.localStorage.removeItem(draftStorageKey);
+      setDraftSaveState("idle");
+      setLastDraftSavedAt(null);
+    }
+
     router.push("/");
     router.refresh();
+  }
+
+  function handleDiscardDraft() {
+    reset(defaultCreateValues);
+    window.localStorage.removeItem(draftStorageKey);
+    setDraftSaveState("idle");
+    setLastDraftSavedAt(null);
+    toast.success("Draft cleared");
   }
 
   function handleCancel() {
@@ -117,6 +281,15 @@ export function TaskForm({
               ? "Make changes to the task details below and save when you're ready."
               : "Fill in the details below - at minimum a title and description will get you started."}
           </p>
+          {isCreateMode && draftSaveState !== "idle" ? (
+            <p className={styles.TaskForm_draftStatus} aria-live="polite">
+              {draftSaveState === "restored"
+                ? "Draft restored from this browser."
+                : draftSaveState === "saving"
+                  ? "Saving draft locally..."
+                  : `Draft saved locally${lastDraftSavedAt ? ` at ${lastDraftSavedAt}` : "."}`}
+            </p>
+          ) : null}
           {projectCode ? <span className={styles.TaskForm_projectCode}>{projectCode}</span> : null}
         </div>
       </div>
@@ -235,6 +408,16 @@ export function TaskForm({
             <div />
           )}
           <div className={styles.TaskForm_footerActions}>
+            {isCreateMode && draftSaveState !== "idle" ? (
+              <button
+                type="button"
+                className={styles.TaskForm_discardBtn}
+                disabled={isSubmitting || isDeleting}
+                onClick={handleDiscardDraft}
+              >
+                Discard Draft
+              </button>
+            ) : null}
             <button type="button" className={styles.TaskForm_cancelBtn} onClick={handleCancel}>
               Cancel
             </button>
