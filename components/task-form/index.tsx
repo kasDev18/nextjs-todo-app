@@ -1,75 +1,90 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Textarea } from "@/components/ui/textarea";
-import { Select } from "@/components/ui/select";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { PlusIcon } from "lucide-react";
-import { createTaskSchema, type CreateTaskFormData } from "@/lib/validations/task";
-import styles from "./styles.module.css";
-import { createTaskAction } from "@/app/(home)/actions";
 import { toast } from "sonner";
+import { createTaskAction, updateTaskAction } from "@/app/tasks/actions";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { cn, getMinDueDate } from "@/lib/utils";
-import { CATEGORY_LABELS } from "../constants";
-import type { TaskFormProps } from "../constants";
+import { createTaskSchema, type CreateTaskFormData } from "@/lib/validations/task";
+import { CATEGORY_LABELS, type TaskFormProps } from "./constants";
+import styles from "./styles.module.css";
 
-export function TaskForm({ defaultCategory, assigneeName }: TaskFormProps) {
+export function TaskForm({
+  mode,
+  assigneeName,
+  taskId,
+  projectCode,
+  initialValues,
+}: TaskFormProps) {
   const router = useRouter();
   const minDueDate = getMinDueDate();
+  const isEditMode = mode === "edit";
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<CreateTaskFormData>({
-    resolver: zodResolver(createTaskSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      dueDate: "",
-      priority: "medium",
-      category: defaultCategory,
-    },
+    // Work around a known zodResolver typing bug with zod 4.3.x on clean installs.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(createTaskSchema as any),
+    defaultValues: initialValues,
   });
 
   async function onSubmit(data: CreateTaskFormData) {
-    const result = await createTaskAction({
-      title: data.title,
-      description: data.description,
-      dueDate: data.dueDate,
-      priority: data.priority,
-      category: defaultCategory,
-    });
+    const result =
+      isEditMode && taskId
+        ? await updateTaskAction(taskId, {
+            title: data.title,
+            description: data.description,
+            dueDate: data.dueDate,
+            priority: data.priority,
+            category: initialValues.category,
+          })
+        : await createTaskAction({
+            title: data.title,
+            description: data.description,
+            dueDate: data.dueDate,
+            priority: data.priority,
+            category: initialValues.category,
+          });
 
     if (!result.success) {
-      console.error("Failed to create task:", result.error);
-      toast.error("Failed to create task");
+      console.error(`Failed to ${isEditMode ? "update" : "create"} task:`, result.error);
+      toast.error(result.error);
       return;
     }
 
-    toast.success("Task created successfully");
+    toast.success(isEditMode ? "Task updated successfully" : "Task created successfully");
 
     router.push("/");
     router.refresh();
   }
 
-  const handleCancel = () => {
+  function handleCancel() {
     router.push("/");
-  };
+  }
 
   return (
     <div className={styles.TaskForm_card}>
       <div className={styles.TaskForm_header}>
         <div className={styles.TaskForm_headerLeft}>
           <div>
-            <span className={"text-xs text-blue-500"}>+ Add Task</span>
+            <span className="text-xs text-blue-500">{isEditMode ? "Edit Task" : "+ Add Task"}</span>
           </div>
-          <h2 className={styles.TaskForm_title}>What needs to get done?</h2>
+          <h2 className={styles.TaskForm_title}>
+            {isEditMode ? "Update task details" : "What needs to get done?"}
+          </h2>
           <p className={styles.TaskForm_subtitle}>
-            Fill in the details below — at minimum a title and description will get you started.
+            {isEditMode
+              ? "Make changes to the task details below and save when you're ready."
+              : "Fill in the details below - at minimum a title and description will get you started."}
           </p>
+          {projectCode ? <span className={styles.TaskForm_projectCode}>{projectCode}</span> : null}
         </div>
       </div>
 
@@ -92,7 +107,7 @@ export function TaskForm({ defaultCategory, assigneeName }: TaskFormProps) {
           <Textarea
             rows={3}
             className={styles.TaskForm_descInput}
-            placeholder="Add a description — what needs to be done, any context or notes..."
+            placeholder="Add a description - what needs to be done, any context or notes..."
             aria-invalid={!!errors.description}
             {...register("description")}
           />
@@ -140,9 +155,9 @@ export function TaskForm({ defaultCategory, assigneeName }: TaskFormProps) {
             <div className={styles.TaskForm_inputShell} aria-disabled={true}>
               <span
                 className={cn("cursor-not-allowed", styles.TaskForm_catBadge)}
-                data-category={defaultCategory}
+                data-category={initialValues.category}
               >
-                {CATEGORY_LABELS[defaultCategory]}
+                {CATEGORY_LABELS[initialValues.category]}
               </span>
             </div>
           </div>
@@ -162,8 +177,13 @@ export function TaskForm({ defaultCategory, assigneeName }: TaskFormProps) {
             Cancel
           </button>
           <button type="submit" className={styles.TaskForm_submitBtn} disabled={isSubmitting}>
-            <PlusIcon className="size-3.5" />
-            {isSubmitting ? "Creating..." : "Create Task"}
+            {isSubmitting
+              ? isEditMode
+                ? "Saving..."
+                : "Creating..."
+              : isEditMode
+                ? "Save Changes"
+                : "Create Task"}
           </button>
         </div>
       </form>

@@ -1,5 +1,9 @@
 import cron from "node-cron";
-import { getAllTasks, type SelectTask, updateTaskReminderStatus } from "@/lib/db/tasks";
+import {
+  getAllTasksWithReminderStatus,
+  syncTaskReminderStatus,
+  type SelectTask,
+} from "@/lib/db/tasks";
 import { TaskNotification } from "@/components/header/constants";
 import {
   getTaskStatus,
@@ -11,6 +15,13 @@ import {
 
 let isTaskMonitorStarted = false;
 
+/*
+  Gets the task notifications for a given set of tasks.
+  @param tasks - The tasks to get the notifications for.
+  @param userId - The ID of the user to get the notifications for.
+  @param now - The current date and time.
+  @returns The task notifications.
+*/
 export function getTaskNotifications(
   tasks: SelectTask[],
   userId?: string,
@@ -47,9 +58,13 @@ export function getTaskNotifications(
     });
 }
 
+/*
+  Checks the task deadlines for a given set of tasks.
+  @returns The task deadline check results.
+*/
 async function checkTaskDeadlines() {
   try {
-    const allTasks = await getAllTasks();
+    const allTasks = await getAllTasksWithReminderStatus();
     const now = new Date();
     let overdueCount = 0; // Count of overdue tasks
     let nearlyExpiredCount = 0; // Count of nearly expired tasks
@@ -59,10 +74,11 @@ async function checkTaskDeadlines() {
       const dueDate = new Date(item.dueDate);
       const overdueAt = getOverdueAt(dueDate);
       const status = getTaskStatus(dueDate, now);
+      const didUpdateReminder = await syncTaskReminderStatus(item.id, status, item.reminder);
 
       if (status === "overdue") {
         overdueCount += 1;
-        if (await updateTaskReminderStatus(item.id, "overdue")) {
+        if (didUpdateReminder) {
           updatedReminderCount += 1;
         }
         console.log(
@@ -73,12 +89,17 @@ async function checkTaskDeadlines() {
 
       if (status === "nearlyExpired") {
         nearlyExpiredCount += 1;
-        if (await updateTaskReminderStatus(item.id, "nearlyExpired")) {
+        if (didUpdateReminder) {
           updatedReminderCount += 1;
         }
         console.log(
           `[task-monitor] NEARLY EXPIRED [${item.project}] ${item.title} | overdue in less than ${NEARLY_EXPIRED_HOURS} hours | due: ${formatUtcDate(overdueAt)}`,
         );
+        continue;
+      }
+
+      if (didUpdateReminder) {
+        updatedReminderCount += 1;
       }
     }
 
@@ -98,10 +119,19 @@ async function checkTaskDeadlines() {
   }
 }
 
+/*
+  Runs the task deadline check.
+  This function is called by the cron job to check the task deadlines.
+  @returns The task deadline check results.
+*/
 export async function runTaskDeadlineCheck() {
   return checkTaskDeadlines();
 }
 
+/*
+  Starts the task deadline check.
+  This function is called by the cron job to start the task deadline check.
+*/
 export function task() {
   if (isTaskMonitorStarted) {
     return;

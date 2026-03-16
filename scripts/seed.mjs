@@ -163,8 +163,8 @@ function createDueDate(dueInDays) {
 }
 
 async function getOrCreateSeedUser(client) {
-  const targetEmail = "kascatindoy173@gmail.com";
-  const targetName = "Kevin Sanchez";
+  const targetEmail = process.env.SEED_USER_EMAIL || "sample@email.com";
+  const targetName = process.env.SEED_USER_NAME || "Sample User";
 
   const { rows: existingUsers } = await client.query(
     "select id, name, email from users where lower(email) = lower($1) limit 1",
