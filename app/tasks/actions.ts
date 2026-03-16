@@ -10,9 +10,11 @@ import {
   generateUniqueProjectCode,
   getTaskById,
   updateTask,
+  updateTaskCategory,
   type SelectTask,
 } from "@/lib/db/tasks";
 import { createTaskSchema } from "@/lib/validations/task";
+import { categoryEnum } from "@/lib/db/schema";
 import { getTaskStatus } from "@/notifications/utils";
 
 type TaskActionFormData = {
@@ -176,6 +178,53 @@ export async function deleteTaskAction(
     return { success: true };
   } catch (err) {
     console.error("Failed to delete task:", err);
+    return { success: false, error: "Something went wrong. Please try again." };
+  }
+}
+
+/*
+  Moves a task to another board column.
+  @param taskId - The ID of the task to move.
+  @param category - The destination category.
+  @returns The updated task.
+*/
+export async function moveTaskAction(
+  taskId: string,
+  category: string,
+): Promise<TaskMutationResult> {
+  try {
+    const session = await getUserFromSession();
+
+    if (!session?.user) {
+      return { success: false, error: "You must be signed in to move a task." };
+    }
+
+    if (!categoryEnum.enumValues.includes(category as Category)) {
+      return { success: false, error: "Invalid task column." };
+    }
+
+    const existingTask = await getTaskById(taskId);
+
+    if (!existingTask || existingTask.userId !== session.user.id) {
+      return { success: false, error: "Task not found." };
+    }
+
+    if (existingTask.category === category) {
+      return { success: true, task: existingTask };
+    }
+
+    const task = await updateTaskCategory(taskId, category as Category);
+
+    if (!task) {
+      return { success: false, error: "Task not found." };
+    }
+
+    revalidatePath("/");
+    revalidatePath(`/tasks/${taskId}/edit`);
+
+    return { success: true, task };
+  } catch (err) {
+    console.error("Failed to move task:", err);
     return { success: false, error: "Something went wrong. Please try again." };
   }
 }

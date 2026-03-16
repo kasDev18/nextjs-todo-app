@@ -6,7 +6,11 @@
 }
 
 .TaskBoard_col {
-  @apply border-border bg-subtle dark:border-border dark:bg-card dark:shadow-card flex h-[85vh] flex-col overflow-hidden rounded-[1.125rem] border p-3 pr-4 md:p-4 md:pr-5;
+  @apply border-border bg-subtle dark:border-border dark:bg-card dark:shadow-card flex h-[85vh] flex-col overflow-hidden rounded-[1.125rem] border p-3 pr-4 transition-[border-color,box-shadow,background-color] md:p-4 md:pr-5;
+}
+
+.TaskBoard_col___dropTarget {
+  @apply border-accent/40 bg-accent/5 shadow-[0_0_0_1px_rgb(59_130_246/0.12)];
 }
 
 .TaskBoard_separator {
@@ -67,7 +71,24 @@
 }
 
 .TaskBoard_card {
-  @apply dark:bg-surface dark:border-border dark:shadow-card flex min-h-[7.75rem] flex-col rounded-[0.95rem] border px-3 py-3 md:px-3.5 md:py-3.5;
+  @apply dark:bg-surface dark:border-border dark:shadow-card flex min-h-[7.75rem] flex-col rounded-[0.95rem] border px-3 py-3 transition-[transform,opacity,box-shadow,border-color] md:px-3.5 md:py-3.5;
+}
+
+.TaskBoard_card___draggable {
+  @apply cursor-grab;
+}
+
+.TaskBoard_card___draggable:active {
+  @apply cursor-grabbing;
+}
+
+.TaskBoard_card___dragging {
+  @apply border-accent/40 opacity-55 shadow-none;
+  transform: rotate(1deg) scale(0.99);
+}
+
+.TaskBoard_card___pending {
+  @apply pointer-events-none opacity-60;
 }
 
 .TaskBoard_cardHeader {
