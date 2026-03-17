@@ -4,6 +4,7 @@ import {
   sendTaskReminderEmailOnce,
   syncTaskReminderStatus,
   type SelectTask,
+  type SelectTaskWithReminder,
 } from "@/lib/db/tasks";
 import { TaskNotification } from "@/components/header/constants";
 import { sendTaskReminderEmail } from "@/lib/email/mail";
@@ -87,7 +88,7 @@ async function deliverTaskReminderEmail(
   @returns The task notifications.
 */
 export function getTaskNotifications(
-  tasks: SelectTask[],
+  tasks: Array<SelectTask | SelectTaskWithReminder>,
   userId?: string,
   now = new Date(),
 ): TaskNotification[] {
@@ -111,6 +112,8 @@ export function getTaskNotifications(
         dueDate,
         priority: task.priority,
         status,
+        href: `/tasks/${task.id}/edit`,
+        isOpened: Boolean("reminder" in task ? task.reminder?.isOpened : false),
       };
     })
     .sort((left, right) => {

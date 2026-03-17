@@ -75,15 +75,31 @@
 }
 
 .Header_ddItem {
-  @apply hover:bg-subtle border-border border-b px-3 py-3;
+  @apply hover:bg-subtle border-border block border-b px-3 py-3 transition-colors;
+}
+
+.Header_ddItemOpened {
+  @apply opacity-70;
 }
 
 .Header_ddItemHeader {
   @apply mb-2 flex items-center justify-between gap-3;
 }
 
+.Header_ddItemMeta {
+  @apply flex items-center gap-2;
+}
+
 .Header_ddItemStatus {
   @apply rounded-full px-2 py-1 text-[11px] font-semibold;
+}
+
+.Header_ddItemUnreadDot {
+  @apply h-2 w-2 rounded-full bg-blue-500;
+}
+
+.Header_ddItemOpenedLabel {
+  @apply text-muted text-[11px] font-medium;
 }
 
 .Header_ddItemProj {

@@ -1,11 +1,12 @@
 import styles from "./styles.module.css";
 import { ThemeToggle } from "../ThemeToggle";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "../ui/button";
 import { BellIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { shortUtcDateFormatter } from "@/lib/formatters";
-import { getTasksByUserId } from "@/lib/db/tasks";
+import { getTasksByUserIdWithReminderStatus } from "@/lib/db/tasks";
 import { getTaskNotifications } from "@/notifications";
 import {
   DropdownMenu,
@@ -23,24 +24,34 @@ export default async function Header() {
 
   if (session?.user) {
     try {
-      const tasks = await getTasksByUserId(session.user.id);
+      const tasks = await getTasksByUserIdWithReminderStatus(session.user.id);
       const notifications = getTaskNotifications(tasks, session.user.id);
-      const overdueCount = notifications.filter((item) => item.status === "overdue").length;
+      const unreadNotifications = notifications.filter((item) => !item.isOpened);
+      const overdueCount = unreadNotifications.filter((item) => item.status === "overdue").length;
 
       headerNotifications = {
         notifications,
         overdueCount,
-        nearlyExpiredCount: notifications.length - overdueCount,
+        nearlyExpiredCount: unreadNotifications.length - overdueCount,
         hasNotifications: notifications.length > 0,
-        badgeLabel: notifications.length > 9 ? "9+" : String(notifications.length),
+        hasUnreadNotifications: unreadNotifications.length > 0,
+        unreadCount: unreadNotifications.length,
+        badgeLabel: unreadNotifications.length > 9 ? "9+" : String(unreadNotifications.length),
       };
     } catch (error) {
       console.error("Failed to load header notifications:", error);
     }
   }
 
-  const { notifications, overdueCount, nearlyExpiredCount, hasNotifications, badgeLabel } =
-    headerNotifications;
+  const {
+    notifications,
+    overdueCount,
+    nearlyExpiredCount,
+    hasNotifications,
+    hasUnreadNotifications,
+    unreadCount,
+    badgeLabel,
+  } = headerNotifications;
 
   return (
     <div className={styles.Header}>
@@ -55,7 +66,7 @@ export default async function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="relative">
               <Button variant="ghost" size="icon" className={styles.Header_ddBtn}>
-                {hasNotifications ? (
+                {hasUnreadNotifications ? (
                   <div className={styles.Header_ddNotifBadge}>
                     <span className={styles.Header_ddNotifBadge_label}>{badgeLabel}</span>
                   </div>
@@ -68,13 +79,17 @@ export default async function Header() {
                 <div className="space-y-1">
                   <p className={styles.Header_ddTitle}>Notifications</p>
                   <p className={styles.Header_ddDesc}>
-                    {hasNotifications
+                    {hasUnreadNotifications
                       ? `${overdueCount} overdue, ${nearlyExpiredCount} due soon`
-                      : "No urgent deadlines right now"}
+                      : hasNotifications
+                        ? "All urgent notifications have been opened"
+                        : "No urgent deadlines right now"}
                   </p>
                 </div>
                 {hasNotifications ? (
-                  <span className={styles.Header_ddUrgent}>{notifications.length} urgent</span>
+                  <span className={styles.Header_ddUrgent}>
+                    {hasUnreadNotifications ? `${unreadCount} unread` : "All opened"}
+                  </span>
                 ) : null}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -87,12 +102,26 @@ export default async function Header() {
                         : styles.Header_ddDueSoon;
 
                     return (
-                      <div key={notification.id} className={styles.Header_ddItem}>
+                      <Link
+                        key={notification.id}
+                        href={notification.href}
+                        className={cn(
+                          styles.Header_ddItem,
+                          notification.isOpened && styles.Header_ddItemOpened,
+                        )}
+                      >
                         <div className={styles.Header_ddItemHeader}>
                           <span className={cn(styles.Header_ddItemStatus, statusStyles)}>
                             {notification.status === "overdue" ? "Overdue" : "Due soon"}
                           </span>
-                          <span className={styles.Header_ddItemProj}>{notification.project}</span>
+                          <div className={styles.Header_ddItemMeta}>
+                            {notification.isOpened ? (
+                              <span className={styles.Header_ddItemOpenedLabel}>Opened</span>
+                            ) : (
+                              <span className={styles.Header_ddItemUnreadDot} aria-hidden="true" />
+                            )}
+                            <span className={styles.Header_ddItemProj}>{notification.project}</span>
+                          </div>
                         </div>
                         <p className={styles.Header_ddItemTitle}>{notification.title}</p>
                         <p className={styles.Header_ddItemDesc}>
@@ -100,7 +129,7 @@ export default async function Header() {
                             ? `Deadline passed on ${shortUtcDateFormatter.format(notification.dueDate)}`
                             : `Due by ${shortUtcDateFormatter.format(notification.dueDate)}`}
                         </p>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

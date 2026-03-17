@@ -3,6 +3,7 @@ import { db, getClient } from "./index";
 import { taskReminders, tasks } from "./schema";
 import { eq, asc } from "drizzle-orm";
 import { buildProjectCode } from "@/lib/utils";
+import { getTaskStatus } from "@/notifications/utils";
 
 export type InsertTask = typeof tasks.$inferInsert;
 export type SelectTask = typeof tasks.$inferSelect;
@@ -14,9 +15,13 @@ export type TaskReminderRecord = {
   emailExpReminderSent: boolean | null;
   emailOverdueReminderSent: boolean | null;
   emailSentTo: string | null;
+  isOpened: boolean | null;
 };
 export type SelectTaskWithAssignee = SelectTask & {
   assigneeName: string;
+};
+export type SelectTaskWithReminder = SelectTask & {
+  reminder: TaskReminderRecord | null;
 };
 export type SelectTaskWithReminderStatus = SelectTask & {
   reminder: TaskReminderRecord | null;
@@ -61,6 +66,7 @@ async function getTaskReminderRecord(taskId: string): Promise<TaskReminderRecord
       emailExpReminderSent: true,
       emailOverdueReminderSent: true,
       emailSentTo: true,
+      isOpened: true,
     },
   });
 
@@ -103,6 +109,7 @@ async function updateTaskReminderRecord(
           emailExpReminderSent: false,
           emailOverdueReminderSent: false,
           emailSentTo: options.emailSentTo ?? null,
+          isOpened: false,
         }
       : {}),
   };
@@ -123,7 +130,8 @@ async function updateTaskReminderRecord(
     (!options.resetEmailStatus ||
       (existing.emailExpReminderSent === reminderUpdates.emailExpReminderSent &&
         existing.emailOverdueReminderSent === reminderUpdates.emailOverdueReminderSent &&
-        existing.emailSentTo === reminderUpdates.emailSentTo));
+        existing.emailSentTo === reminderUpdates.emailSentTo &&
+        existing.isOpened === reminderUpdates.isOpened));
 
   if (alreadyUpdated) {
     return false;
@@ -170,6 +178,43 @@ export async function getTaskById(taskId: string): Promise<SelectTask | undefine
   return db.query.tasks.findFirst({
     where: eq(tasks.id, taskId),
   });
+}
+
+/*
+  Gets a task and its reminder record by task ID.
+  @param taskId - The ID of the task to get.
+  @returns The task with its reminder record, or undefined if no task exists.
+*/
+export async function getTaskByIdWithReminder(
+  taskId: string,
+): Promise<SelectTaskWithReminder | undefined> {
+  const task = await db.query.tasks.findFirst({
+    where: eq(tasks.id, taskId),
+    with: {
+      reminders: {
+        columns: {
+          id: true,
+          notifExpReminderSent: true,
+          notifOverdueReminderSent: true,
+          emailExpReminderSent: true,
+          emailOverdueReminderSent: true,
+          emailSentTo: true,
+          isOpened: true,
+        },
+      },
+    },
+  });
+
+  if (!task) {
+    return undefined;
+  }
+
+  const { reminders, ...taskFields } = task;
+
+  return {
+    ...taskFields,
+    reminder: reminders[0] ?? null,
+  };
 }
 
 /*
@@ -419,6 +464,7 @@ export async function getAllTasksWithReminderStatus(): Promise<SelectTaskWithRem
           emailExpReminderSent: true,
           emailOverdueReminderSent: true,
           emailSentTo: true,
+          isOpened: true,
         },
       },
       user: {
@@ -449,6 +495,86 @@ export async function getTasksByUserId(userId: string): Promise<SelectTask[]> {
     where: eq(tasks.userId, userId),
     orderBy: asc(tasks.dueDate),
   });
+}
+
+/*
+  Gets all tasks by user ID with reminder state.
+  @param userId - The ID of the user to get the tasks for.
+  @returns All tasks by user ID with reminder state.
+*/
+export async function getTasksByUserIdWithReminderStatus(
+  userId: string,
+): Promise<SelectTaskWithReminder[]> {
+  const taskRows = await db.query.tasks.findMany({
+    where: eq(tasks.userId, userId),
+    with: {
+      reminders: {
+        columns: {
+          id: true,
+          notifExpReminderSent: true,
+          notifOverdueReminderSent: true,
+          emailExpReminderSent: true,
+          emailOverdueReminderSent: true,
+          emailSentTo: true,
+          isOpened: true,
+        },
+      },
+    },
+    orderBy: asc(tasks.dueDate),
+  });
+
+  return taskRows.map(({ reminders, ...task }) => ({
+    ...task,
+    reminder: reminders[0] ?? null,
+  }));
+}
+
+/*
+  Marks a task reminder as opened for the owning user.
+  @param taskId - The ID of the task whose reminder was opened.
+  @param userId - The ID of the user opening the reminder.
+  @returns True when the reminder state changed, false otherwise.
+*/
+export async function markTaskReminderOpened(taskId: string, userId: string): Promise<boolean> {
+  const task = await getTaskById(taskId);
+
+  if (!task || task.userId !== userId) {
+    return false;
+  }
+
+  const status = getTaskStatus(new Date(task.dueDate));
+
+  if (!status) {
+    return false;
+  }
+
+  const existingReminder = await getTaskReminderRecord(taskId);
+
+  if (!existingReminder) {
+    await db.insert(taskReminders).values({
+      id: crypto.randomUUID(),
+      taskId,
+      notifExpReminderSent: status === "nearlyExpired",
+      notifOverdueReminderSent: status === "overdue",
+      isOpened: true,
+    });
+
+    return true;
+  }
+
+  if (existingReminder.isOpened) {
+    return false;
+  }
+
+  await db
+    .update(taskReminders)
+    .set({
+      isOpened: true,
+      updatedAt: new Date(),
+    })
+    .where(eq(taskReminders.id, existingReminder.id));
+
+  return true;
 }
 
 /*
