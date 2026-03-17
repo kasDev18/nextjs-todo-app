@@ -17,6 +17,7 @@ import {
 } from "../ui/dropdown-menu";
 import { getUserFromSession } from "@/lib/auth";
 import { EMPTY_HEADER_NOTIFICATIONS, type HeaderNotificationsData } from "./constants";
+import { UserMenu } from "./user-menu";
 
 export default async function Header() {
   const session = await getUserFromSession();
@@ -62,6 +63,7 @@ export default async function Header() {
         <span className={styles.Header_logoName}>Taskflow</span>
       </div>
       <div className={styles.Header_dd}>
+        <ThemeToggle />
         {session && session.user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="relative">
@@ -144,7 +146,7 @@ export default async function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        <ThemeToggle />
+        {session?.user ? <UserMenu name={session.user.name} email={session.user.email} /> : null}
       </div>
     </div>
   );

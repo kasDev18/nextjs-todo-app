@@ -34,6 +34,34 @@
   @apply relative rounded-full;
 }
 
+.Header_userBtn {
+  @apply rounded-full bg-transparent p-0 hover:cursor-pointer hover:bg-transparent aria-expanded:bg-transparent dark:hover:bg-transparent;
+}
+
+.Header_userAvatar {
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-purple-500 text-xs font-semibold text-white;
+}
+
+.Header_userMenu {
+  @apply w-72 rounded-(--r-xl) p-1;
+}
+
+.Header_userMenuLabel {
+  @apply flex flex-col gap-0.5 px-3 py-2;
+}
+
+.Header_userMenuEyebrow {
+  @apply text-muted text-[11px] font-medium tracking-[0.08em] uppercase;
+}
+
+.Header_userMenuName {
+  @apply text-foreground text-sm font-semibold;
+}
+
+.Header_userMenuEmail {
+  @apply text-muted truncate text-xs font-normal;
+}
+
 .Header_ddNotifBadge {
   @apply absolute top-0 right-0 z-10 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1;
 }
