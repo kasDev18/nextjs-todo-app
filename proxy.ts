@@ -22,6 +22,9 @@ export default async function middleware(request: NextRequest): Promise<NextResp
 
   if (!isAuthenticated && !isAuthRoute) {
     const signInUrl = new URL("/signin", request.url);
+    const redirectTo = `${pathname}${request.nextUrl.search}`;
+
+    signInUrl.searchParams.set("redirectTo", redirectTo);
 
     return NextResponse.redirect(signInUrl);
   }

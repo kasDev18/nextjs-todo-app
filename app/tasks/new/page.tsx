@@ -32,8 +32,8 @@ export default async function CreateTaskPage({ searchParams }: CreateTaskPagePro
   const assigneeName = session?.user?.name ?? "";
 
   return (
-    <main className="animate-rise min-h-[calc(100vh-5rem)] px-2 md:px-6">
-      <section className={styles.TaskForm_page}>
+    <main className="animate-rise flex min-h-[calc(100vh-5rem)] px-2 md:px-6">
+      <section className="mx-auto w-full max-w-[38.75rem] px-2 py-6 md:px-0">
         <TaskForm
           mode="create"
           assigneeName={assigneeName}

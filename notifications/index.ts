@@ -1,10 +1,12 @@
 import cron from "node-cron";
 import {
   getAllTasksWithReminderStatus,
+  sendTaskReminderEmailOnce,
   syncTaskReminderStatus,
   type SelectTask,
 } from "@/lib/db/tasks";
 import { TaskNotification } from "@/components/header/constants";
+import { sendTaskReminderEmail } from "@/lib/email/mail";
 import {
   getTaskStatus,
   TASK_CHECK_SCHEDULE,
@@ -14,6 +16,68 @@ import {
 } from "./utils";
 
 let isTaskMonitorStarted = false;
+type TaskReminderEmailCandidate = Awaited<ReturnType<typeof getAllTasksWithReminderStatus>>[number];
+
+function getAppBaseUrl() {
+  return process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+}
+
+function getTaskReminderUrl(taskId: string) {
+  return new URL(`/tasks/${taskId}/edit`, getAppBaseUrl()).toString();
+}
+
+function shouldSendTaskReminderEmail(
+  emailReminder:
+    | {
+        emailExpReminderSent: boolean | null;
+        emailOverdueReminderSent: boolean | null;
+      }
+    | null
+    | undefined,
+  status: "nearlyExpired" | "overdue",
+) {
+  return status === "nearlyExpired"
+    ? !emailReminder?.emailExpReminderSent
+    : !emailReminder?.emailOverdueReminderSent;
+}
+
+function getTaskReminderEmailSkipReason(
+  item: TaskReminderEmailCandidate,
+  status: "nearlyExpired" | "overdue",
+) {
+  if (!item.userEmail) {
+    return "missingRecipient";
+  }
+
+  if (!shouldSendTaskReminderEmail(item.reminder, status)) {
+    return "alreadySent";
+  }
+
+  return null;
+}
+
+async function deliverTaskReminderEmail(
+  item: TaskReminderEmailCandidate,
+  status: "nearlyExpired" | "overdue",
+  dueDate: Date,
+) {
+  if (!item.userEmail) {
+    return false;
+  }
+
+  return sendTaskReminderEmailOnce(item.id, status, item.userEmail, () =>
+    sendTaskReminderEmail({
+      to: item.userEmail!,
+      name: item.userName,
+      taskTitle: item.title,
+      project: item.project,
+      dueDate,
+      priority: item.priority,
+      status,
+      taskUrl: getTaskReminderUrl(item.id),
+    }),
+  );
+}
 
 /*
   Gets the task notifications for a given set of tasks.
@@ -69,6 +133,9 @@ async function checkTaskDeadlines() {
     let overdueCount = 0; // Count of overdue tasks
     let nearlyExpiredCount = 0; // Count of nearly expired tasks
     let updatedReminderCount = 0; // Count of updated reminder statuses
+    let sentEmailCount = 0; // Count of reminder emails sent
+    let skippedEmailAlreadySentCount = 0; // Count of skipped emails already sent
+    let skippedEmailMissingRecipientCount = 0; // Count of skipped emails missing recipient
 
     for (const item of allTasks) {
       const dueDate = new Date(item.dueDate);
@@ -83,6 +150,24 @@ async function checkTaskDeadlines() {
         if (didUpdateReminder) {
           updatedReminderCount += 1;
         }
+        const emailSkipReason = getTaskReminderEmailSkipReason(item, status);
+        if (!emailSkipReason) {
+          try {
+            const didSendEmail = await deliverTaskReminderEmail(item, status, dueDate);
+            if (didSendEmail) {
+              sentEmailCount += 1;
+            }
+          } catch (error) {
+            console.error(
+              `[task-monitor] Failed to send overdue email for task ${item.id}.`,
+              error,
+            );
+          }
+        } else if (emailSkipReason === "alreadySent") {
+          skippedEmailAlreadySentCount += 1;
+        } else {
+          skippedEmailMissingRecipientCount += 1;
+        }
         console.log(
           `[task-monitor] OVERDUE [${item.project}] ${item.title} | due: ${formatUtcDate(overdueAt)}`,
         );
@@ -93,6 +178,24 @@ async function checkTaskDeadlines() {
         nearlyExpiredCount += 1;
         if (didUpdateReminder) {
           updatedReminderCount += 1;
+        }
+        const emailSkipReason = getTaskReminderEmailSkipReason(item, status);
+        if (!emailSkipReason) {
+          try {
+            const didSendEmail = await deliverTaskReminderEmail(item, status, dueDate);
+            if (didSendEmail) {
+              sentEmailCount += 1;
+            }
+          } catch (error) {
+            console.error(
+              `[task-monitor] Failed to send nearly expired email for task ${item.id}.`,
+              error,
+            );
+          }
+        } else if (emailSkipReason === "alreadySent") {
+          skippedEmailAlreadySentCount += 1;
+        } else {
+          skippedEmailMissingRecipientCount += 1;
         }
         console.log(
           `[task-monitor] NEARLY EXPIRED [${item.project}] ${item.title} | overdue in less than ${NEARLY_EXPIRED_HOURS} hours | due: ${formatUtcDate(overdueAt)}`,
@@ -106,7 +209,7 @@ async function checkTaskDeadlines() {
     }
 
     console.log(
-      `[task-monitor] tick | checked=${allTasks.length} overdue=${overdueCount} nearlyExpired=${nearlyExpiredCount} updated=${updatedReminderCount}`,
+      `[task-monitor] tick | checked=${allTasks.length} overdue=${overdueCount} nearlyExpired=${nearlyExpiredCount} updated=${updatedReminderCount} emailsSent=${sentEmailCount} emailsSkippedAlreadySent=${skippedEmailAlreadySentCount} emailsSkippedMissingRecipient=${skippedEmailMissingRecipientCount}`,
     );
 
     return {
@@ -114,6 +217,7 @@ async function checkTaskDeadlines() {
       overdue: overdueCount,
       nearlyExpired: nearlyExpiredCount,
       updated: updatedReminderCount,
+      emailsSent: sentEmailCount,
     };
   } catch (error) {
     console.error("[task-monitor] Failed to check task deadlines.", error);

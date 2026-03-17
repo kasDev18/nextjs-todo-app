@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
 import styles from "./styles.module.css";
+import { getSafeRedirectPath } from "@/lib/auth-redirect";
 import { cn } from "@/lib/utils";
 import { signUpSchema, type SignUpFormData } from "@/lib/validations/auth";
 import { signUpAction } from "./actions";
@@ -18,6 +19,8 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = getSafeRedirectPath(searchParams.get("redirectTo"));
 
   const {
     register,
@@ -46,7 +49,9 @@ export default function SignUpPage() {
     }
 
     toast.success("Account created successfully");
-    router.push("/signin");
+    router.push(
+      redirectTo === "/" ? "/signin" : `/signin?redirectTo=${encodeURIComponent(redirectTo)}`,
+    );
   }
 
   return (
@@ -236,7 +241,14 @@ export default function SignUpPage() {
 
         <div className={styles.SignUp_signinRow}>
           Already have an account?{" "}
-          <Link className={styles.SignUp_signinRowLink} href="/signin">
+          <Link
+            className={styles.SignUp_signinRowLink}
+            href={
+              redirectTo === "/"
+                ? "/signin"
+                : `/signin?redirectTo=${encodeURIComponent(redirectTo)}`
+            }
+          >
             Sign in
           </Link>
         </div>
