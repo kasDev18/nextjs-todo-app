@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TaskForm } from "@/components/task-form";
+import { TaskNotificationOpenTracker } from "@/components/header/task-notification-open-tracker";
 import { Button } from "@/components/ui/button";
 import styles from "./styles.module.css";
 import { getUserFromSession } from "@/lib/auth";
-import { getTaskById } from "@/lib/db/tasks";
+import { getTaskByIdWithReminder } from "@/lib/db/tasks";
 import { cn } from "@/lib/utils";
+import { getTaskStatus } from "@/notifications/utils";
 
 export const metadata: Metadata = {
   title: "Taskflow - Edit Task",
@@ -60,7 +62,7 @@ export default async function EditTaskPage({ params }: EditTaskPageProps) {
     redirect(`/signin?redirectTo=${encodeURIComponent(taskHref)}`);
   }
 
-  const task = await getTaskById(taskId);
+  const task = await getTaskByIdWithReminder(taskId);
 
   if (!task) {
     return (
@@ -80,8 +82,12 @@ export default async function EditTaskPage({ params }: EditTaskPageProps) {
     );
   }
 
+  const reminderStatus = getTaskStatus(new Date(task.dueDate));
+  const shouldTrackNotificationOpen = Boolean(reminderStatus && !task.reminder?.isOpened);
+
   return (
     <main className={cn("animate-rise", styles.EditTask)}>
+      {shouldTrackNotificationOpen ? <TaskNotificationOpenTracker taskId={task.id} /> : null}
       <section className={styles.EditTask_form}>
         <TaskForm
           mode="edit"

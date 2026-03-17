@@ -9,6 +9,7 @@ import {
   deleteTask,
   generateUniqueProjectCode,
   getTaskById,
+  markTaskReminderOpened,
   updateTask,
   updateTaskCategory,
   type SelectTask,
@@ -226,5 +227,32 @@ export async function moveTaskAction(
   } catch (err) {
     console.error("Failed to move task:", err);
     return { success: false, error: "Something went wrong. Please try again." };
+  }
+}
+
+/*
+  Marks a task notification as opened for the signed-in task owner.
+  @param taskId - The ID of the task whose notification was opened.
+  @returns True when the notification state changed, false otherwise.
+*/
+export async function markTaskNotificationOpenedAction(taskId: string): Promise<boolean> {
+  try {
+    const session = await getUserFromSession();
+
+    if (!session?.user) {
+      return false;
+    }
+
+    const didMarkOpened = await markTaskReminderOpened(taskId, session.user.id);
+
+    if (didMarkOpened) {
+      revalidatePath("/");
+      revalidatePath(`/tasks/${taskId}/edit`);
+    }
+
+    return didMarkOpened;
+  } catch (err) {
+    console.error("Failed to mark task notification as opened:", err);
+    return false;
   }
 }
