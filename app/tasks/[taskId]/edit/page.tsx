@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { TaskForm } from "@/components/task-form";
-import styles from "@/components/task-form/styles.module.css";
+import { Button } from "@/components/ui/button";
+import styles from "./styles.module.css";
 import { getUserFromSession } from "@/lib/auth";
 import { getTaskById } from "@/lib/db/tasks";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Taskflow - Edit Task",
@@ -20,22 +23,66 @@ function formatDueDate(value: Date) {
   return value.toISOString().slice(0, 10);
 }
 
+type TaskReminderAccessStateProps = {
+  title: string;
+  description: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+};
+
+function TaskReminderAccessState({
+  title,
+  description,
+  secondaryHref = "/",
+  secondaryLabel = "Go to dashboard",
+}: TaskReminderAccessStateProps) {
+  return (
+    <main className={cn("animate-rise", styles.EditTask)}>
+      <section className={styles.EditTask_TRAS}>
+        <div className={styles.EditTask_TRASWrapper}>
+          <div className={styles.EditTask_TRASHeader}>Creator-only task access</div>
+          <h1 className={styles.EditTask_TRASTitle}>{title}</h1>
+          <p className={styles.EditTask_TRASDesc}>{description}</p>
+          <Button asChild size="lg" variant="outline" className={styles.EditTask_TRASBtn}>
+            <Link href={secondaryHref}>{secondaryLabel}</Link>
+          </Button>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 export default async function EditTaskPage({ params }: EditTaskPageProps) {
   const [{ taskId }, session] = await Promise.all([params, getUserFromSession()]);
+  const taskHref = `/tasks/${taskId}/edit`;
 
   if (!session?.user) {
-    notFound();
+    redirect(`/signin?redirectTo=${encodeURIComponent(taskHref)}`);
   }
 
   const task = await getTaskById(taskId);
 
-  if (!task || task.userId !== session.user.id) {
-    notFound();
+  if (!task) {
+    return (
+      <TaskReminderAccessState
+        title="This task link is no longer available"
+        description="The task may have been deleted, moved, or the reminder link is no longer valid."
+      />
+    );
+  }
+
+  if (task.userId !== session.user.id) {
+    return (
+      <TaskReminderAccessState
+        title="Only the task creator can open this page"
+        description="This reminder link is tied to the account that created the task. Sign in with the creator account to view the task details or make changes."
+      />
+    );
   }
 
   return (
-    <main className="animate-rise min-h-[calc(100vh-5rem)] px-2 md:px-6">
-      <section className={styles.TaskForm_page}>
+    <main className={cn("animate-rise", styles.EditTask)}>
+      <section className={styles.EditTask_form}>
         <TaskForm
           mode="edit"
           taskId={task.id}

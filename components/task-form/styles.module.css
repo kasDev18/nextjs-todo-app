@@ -5,10 +5,6 @@
   @apply border-border bg-surface text-primary w-full overflow-hidden rounded-(--r-xl) border p-0 shadow-lg sm:max-w-[38.75rem];
 }
 
-.TaskForm_page {
-  @apply mx-auto w-full max-w-[38.75rem] px-2 py-6 md:px-0;
-}
-
 .TaskForm_header {
   @apply flex shrink-0 items-center justify-between px-6 pt-5;
 }

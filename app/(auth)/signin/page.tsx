@@ -1,24 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Suspense, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
 import styles from "./styles.module.css";
 import { cn } from "@/lib/utils";
+import { getSafeRedirectPath } from "@/lib/auth-redirect";
 import { signInSchema, type SignInFormData } from "@/lib/validations/auth";
 import { signIn } from "@/lib/auth-client";
 
-export default function SignInPage() {
+function SignInPageContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = getSafeRedirectPath(searchParams.get("redirectTo"));
 
   const {
     register,
@@ -47,7 +50,7 @@ export default function SignInPage() {
       return;
     }
 
-    router.replace("/");
+    router.replace(redirectTo);
     router.refresh();
   }
 
@@ -199,11 +202,26 @@ export default function SignInPage() {
 
         <div className={styles.SignIn_signupRow}>
           No account?{" "}
-          <Link className={styles.SignIn_signupRowLink} href="/signup">
+          <Link
+            className={styles.SignIn_signupRowLink}
+            href={
+              redirectTo === "/"
+                ? "/signup"
+                : `/signup?redirectTo=${encodeURIComponent(redirectTo)}`
+            }
+          >
             Start free — no card needed
           </Link>
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInPageContent />
+    </Suspense>
   );
 }
