@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import { pgTable, pgEnum, varchar, boolean, timestamp, text } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -52,9 +53,60 @@ export const tasks = pgTable("tasks", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const taskReminders = pgTable("task_reminders", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  taskId: varchar("task_id", { length: 255 })
+    .references(() => tasks.id)
+    .notNull(),
+  notifExpReminderSent: boolean("notif_exp_reminder_sent").default(false),
+  emailExpReminderSent: boolean("email_exp_reminder_sent").default(false),
+  emailOverdueReminderSent: boolean("email_overdue_reminder_sent").default(false),
+  notifOverdueReminderSent: boolean("notif_overdue_reminder_sent").default(false),
+  emailSentTo: varchar("email_sent_to", { length: 255 }).references(() => users.email),
+  isOpened: boolean("is_opened").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const usersRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+  accounts: many(accounts),
+  tasks: many(tasks),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
+  user: one(users, {
+    fields: [tasks.userId],
+    references: [users.id],
+  }),
+  reminders: many(taskReminders),
+}));
+
+export const taskRemindersRelations = relations(taskReminders, ({ one }) => ({
+  task: one(tasks, {
+    fields: [taskReminders.taskId],
+    references: [tasks.id],
+  }),
+}));
+
 export const schema = {
   users,
   sessions,
   accounts,
   tasks,
+  taskReminders,
 };

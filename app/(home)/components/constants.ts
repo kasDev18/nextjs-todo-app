@@ -4,14 +4,20 @@ import type { SelectTask } from "@/lib/db/tasks";
 export type Category = (typeof categoryEnum.enumValues)[number];
 export type Priority = (typeof priorityEnum.enumValues)[number];
 
-export type CreateTaskResult =
+export type TaskMutationResult =
   | { success: true; task: SelectTask }
   | { success: false; error: string };
 
+export const CATEGORY_LABELS: Record<Category, string> = {
+  todo: "To Do",
+  inProgress: "In Progress",
+  done: "Done",
+};
+
 export const COLUMNS: Pick<BoardColumn, "title" | "category">[] = [
-  { title: "To Do", category: "todo" },
-  { title: "In Progress", category: "inProgress" },
-  { title: "Done", category: "done" },
+  { title: CATEGORY_LABELS.todo, category: "todo" },
+  { title: CATEGORY_LABELS.inProgress, category: "inProgress" },
+  { title: CATEGORY_LABELS.done, category: "done" },
 ];
 
 export type BoardColumn = {
@@ -28,4 +34,6 @@ export type Task = {
   dueDate: string;
   project: string;
   priority: Priority;
+  assigneeLabel: string;
+  canEdit: boolean;
 };

@@ -6,7 +6,11 @@
 }
 
 .TaskBoard_col {
-  @apply border-border bg-subtle dark:border-border dark:bg-card dark:shadow-card flex h-[85vh] flex-col overflow-hidden rounded-[1.125rem] border p-3 pr-4 md:p-4 md:pr-5;
+  @apply border-border bg-subtle dark:border-border dark:bg-card dark:shadow-card flex h-[85vh] flex-col overflow-hidden rounded-[1.125rem] border p-3 pr-4 transition-[border-color,box-shadow,background-color] md:p-4 md:pr-5;
+}
+
+.TaskBoard_col___dropTarget {
+  @apply border-accent/40 bg-accent/5 shadow-[0_0_0_1px_rgb(59_130_246/0.12)];
 }
 
 .TaskBoard_separator {
@@ -67,11 +71,48 @@
 }
 
 .TaskBoard_card {
-  @apply dark:bg-surface dark:border-border dark:shadow-card flex min-h-[7.75rem] flex-col rounded-[0.95rem] border px-3 py-3 md:px-3.5 md:py-3.5;
+  @apply dark:bg-surface dark:border-border dark:shadow-card flex min-h-[7.75rem] flex-col rounded-[0.95rem] border px-3 py-3 transition-[transform,opacity,box-shadow,border-color] md:px-3.5 md:py-3.5;
+}
+
+.TaskBoard_card___draggable {
+  @apply cursor-grab;
+}
+
+.TaskBoard_card___draggable:active {
+  @apply cursor-grabbing;
+}
+
+.TaskBoard_card___dragging {
+  @apply border-accent/40 opacity-55 shadow-none;
+  transform: rotate(1deg) scale(0.99);
+}
+
+.TaskBoard_card___pending {
+  @apply pointer-events-none opacity-60;
+}
+
+.TaskBoard_cardHeader {
+  @apply flex items-start justify-between gap-3;
 }
 
 .TaskBoard_cardTitle {
-  @apply dark:text-primary text-[0.88rem] leading-[1.35] font-semibold md:text-[1.05rem] md:leading-[1.4];
+  @apply dark:text-primary min-w-0 flex-1 text-[0.88rem] leading-[1.35] font-semibold md:text-[1.05rem] md:leading-[1.4];
+}
+
+.TaskBoard_cardTitleLink {
+  @apply decoration-accent underline-offset-4 transition hover:underline;
+}
+
+.TaskBoard_cardTitleLink___disabled {
+  @apply text-muted cursor-not-allowed no-underline opacity-70;
+}
+
+.TaskBoard_cardMenuTrigger {
+  @apply text-muted hover:text-primary mt-[-0.125rem] -mr-1;
+}
+
+.TaskBoard_cardMenuCont {
+  @apply min-w-40;
 }
 
 .TaskBoard_cardDesc {
@@ -80,6 +121,14 @@
 
 .TaskBoard_cardPrio {
   @apply text-muted border-border bg-subtle/60 inline-flex items-center rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold tracking-[0.04em] md:text-[0.72rem];
+}
+
+.TaskBoard_cardMeta {
+  @apply flex flex-col gap-4;
+}
+
+.TaskBoard_cardAssignee {
+  @apply inline-flex size-8 items-center justify-center rounded-full border text-[0.72rem] font-semibold tracking-[0.08em] text-white;
 }
 
 .TaskBoard_cardPrio[data-priority="low"] {
@@ -104,4 +153,8 @@
 
 .TaskBoard_taskExpDate {
   @apply text-[0.68rem] font-medium md:text-[0.78rem];
+}
+
+.TaskForm_addTaskButton {
+  @apply text-muted bg-subtle/50 hover:bg-subtle border-border dark:border-border dark:text-muted mt-1 flex w-full items-center gap-2 rounded-lg border p-3;
 }

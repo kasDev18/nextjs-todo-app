@@ -1,0 +1,142 @@
+@reference "tailwindcss";
+@reference "../../app/globals.css";
+
+.TaskForm_card {
+  @apply border-border bg-surface text-primary w-full overflow-hidden rounded-(--r-xl) border p-0 shadow-lg sm:max-w-[38.75rem];
+}
+
+.TaskForm_header {
+  @apply flex shrink-0 items-center justify-between px-6 pt-5;
+}
+
+.TaskForm_headerLeft {
+  @apply flex flex-col gap-2.5;
+}
+
+.TaskForm_title {
+  @apply text-xl font-extrabold;
+}
+
+.TaskForm_titleUl {
+  @apply border-border bg-surface text-primary w-full overflow-hidden rounded-(--r-xl) border p-0 shadow-lg sm:max-w-[38.75rem];
+}
+
+.TaskForm_subtitle {
+  @apply text-muted mt-px text-xs;
+}
+
+.TaskForm_draftStatus {
+  @apply text-muted text-xs;
+}
+
+.TaskForm_projectCode {
+  @apply text-label inline-flex w-fit rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.08em] uppercase;
+}
+
+.TaskForm_divider {
+  @apply border-subtle mx-0 mt-4 border-b;
+}
+
+.TaskForm_body {
+  @apply flex flex-col px-6 py-5;
+}
+
+.TaskForm_titleField {
+  @apply mb-4;
+}
+
+.TaskForm_titleInput {
+  @apply text-primary w-full border-none bg-transparent p-0 text-lg font-extrabold outline-none;
+}
+
+.TaskForm_titleInput::placeholder {
+  @apply text-muted;
+}
+
+.TaskForm_descInput {
+  @apply bg-input border-subtle text-primary focus:border-accent-glow min-h-[5rem] rounded-(--r-md) border px-3.5 py-3 text-[0.8125rem] shadow-sm transition-all outline-none;
+}
+
+.TaskForm_detailsLabel {
+  @apply text-muted mb-2.5 flex items-center gap-1.5 text-[0.625rem] font-bold tracking-[0.12em] uppercase;
+}
+
+.TaskForm_detailsLabel::after {
+  content: "";
+  @apply bg-subtle h-px flex-1;
+}
+
+.TaskForm_metaGrid {
+  @apply mb-5 grid grid-cols-2 gap-3;
+}
+
+.TaskForm_metaField label {
+  @apply text-label mb-1.5 block text-[0.6875rem] font-semibold tracking-[0.07em] uppercase;
+}
+
+.TaskForm_metaFieldText {
+  @apply text-label mb-1.5 block text-[0.6875rem] font-semibold tracking-[0.07em] uppercase;
+}
+
+.TaskForm_inputShell {
+  @apply bg-input border-subtle hover:border-mid w-full rounded-(--r-md) border transition-colors;
+}
+
+.TaskForm_select {
+  @apply bg-input border-subtle hover:border-mid h-auto w-full cursor-pointer rounded-(--r-md) border px-3 py-2.5 text-[0.8125rem] font-medium transition-colors;
+}
+
+.TaskForm_dueDate {
+  @apply text-primary w-full rounded-(--r-md) border-none bg-transparent px-3 py-2.5 text-[0.8125rem] font-medium outline-none;
+}
+
+.TaskForm_catBadge {
+  @apply text-muted block px-3 py-2.5 text-[0.8125rem] font-medium;
+}
+
+.TaskForm_assigneeName {
+  @apply text-secondary block px-3 py-2.5 text-[0.8125rem] font-medium;
+}
+
+.TaskForm_catBadge[data-category="todo"] {
+  @apply text-secondary;
+}
+
+.TaskForm_catBadge[data-category="inProgress"] {
+  @apply text-accent;
+}
+
+.TaskForm_catBadge[data-category="done"] {
+  @apply text-green;
+}
+
+.TaskForm_footer {
+  @apply border-subtle -mx-6 mt-5 -mb-1 flex shrink-0 flex-col gap-3 border-t px-6 py-4 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.TaskForm_footerActions {
+  @apply flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row;
+}
+
+.TaskForm_cancelBtn {
+  @apply text-secondary border-subtle hover:bg-accent-glow dark:hover:bg-accent-glow hover:text-primary dark:hover:text-primary hover:border-accent-glow cursor-pointer rounded-(--r-md) border bg-transparent px-4.5 py-2.5 text-[0.8125rem] font-medium transition-all;
+}
+
+.TaskForm_discardBtn {
+  @apply text-muted hover:text-primary cursor-pointer rounded-(--r-md) border border-transparent bg-transparent px-2 py-2.5 text-[0.8125rem] font-medium transition-colors disabled:pointer-events-none disabled:opacity-50;
+}
+
+.TaskForm_deleteBtn {
+  @apply text-destructive border-destructive/30 hover:bg-destructive/10 hover:border-destructive/50 cursor-pointer rounded-(--r-md) border bg-transparent px-4.5 py-2.5 text-[0.8125rem] font-medium transition-all disabled:pointer-events-none disabled:opacity-50;
+}
+
+.TaskForm_submitBtn {
+  @apply flex cursor-pointer items-center justify-center gap-1.5 rounded-(--r-md) border-none px-5 py-2.5 text-[0.8125rem] font-bold tracking-wide text-white transition-all hover:translate-y-px hover:opacity-90 active:translate-y-0 md:justify-start;
+  background: linear-gradient(135deg, #3d82f6 0%, #7c5fe6 100%);
+  box-shadow: 0 0.25rem 1.25rem rgba(61, 130, 246, 0.35);
+  letter-spacing: 0.03em;
+}
+
+.TaskForm_submitBtn:disabled {
+  @apply pointer-events-none opacity-50;
+}

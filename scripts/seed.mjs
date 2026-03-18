@@ -153,20 +153,90 @@ const seedTemplates = [
 
 const seededProjects = seedTemplates.map((template) => template.project);
 
+function getDatabaseSslConfig() {
+  const sslMode = process.env.DATABASE_SSL?.trim().toLowerCase();
+
+  if (!sslMode) {
+    return process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false;
+  }
+
+  if (["false", "disable", "disabled", "off", "0"].includes(sslMode)) {
+    return false;
+  }
+
+  if (["true", "require", "required", "on", "1"].includes(sslMode)) {
+    return { rejectUnauthorized: false };
+  }
+
+  if (["verify-ca", "verify-full"].includes(sslMode)) {
+    return { rejectUnauthorized: true };
+  }
+
+  throw new Error(
+    `Unsupported DATABASE_SSL value "${process.env.DATABASE_SSL}". Use false, require, or verify-full.`,
+  );
+}
+
 function createDueDate(dueInDays) {
   const date = new Date();
   date.setUTCDate(date.getUTCDate() + dueInDays);
 
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 12, 0, 0, 0));
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 12, 0, 0, 0),
+  );
+}
+
+async function getOrCreateSeedUser(client) {
+  const targetEmail = process.env.SEED_USER_EMAIL || "sample@email.com";
+  const targetName = process.env.SEED_USER_NAME || "Sample User";
+
+  const { rows: existingUsers } = await client.query(
+    "select id, name, email from users where lower(email) = lower($1) limit 1",
+    [targetEmail],
+  );
+
+  if (existingUsers.length > 0) {
+    return existingUsers[0];
+  }
+
+  const user = {
+    id: randomUUID(),
+    name: targetName,
+    email: targetEmail,
+  };
+
+  await client.query(
+    `insert into users (
+      id,
+      name,
+      email,
+      email_verified,
+      created_at,
+      updated_at
+    ) values ($1, $2, $3, $4, now(), now())`,
+    [user.id, user.name, user.email, true],
+  );
+
+  return user;
 }
 
 async function seedTasksForUser(client, user) {
+  await client.query(
+    `delete from task_reminders
+     where task_id in (
+       select id from tasks where user_id = $1 and project = any($2::varchar[])
+     )`,
+    [user.id, seededProjects],
+  );
+
   await client.query("delete from tasks where user_id = $1 and project = any($2::varchar[])", [
     user.id,
     seededProjects,
   ]);
 
   for (const template of seedTemplates) {
+    const taskId = randomUUID();
+
     await client.query(
       `insert into tasks (
         id,
@@ -181,7 +251,7 @@ async function seedTasksForUser(client, user) {
         category
       ) values ($1, $2, $3, $4, $5, now(), now(), $6, $7, $8)`,
       [
-        randomUUID(),
+        taskId,
         user.id,
         template.title,
         template.description,
@@ -190,6 +260,20 @@ async function seedTasksForUser(client, user) {
         template.priority,
         template.category,
       ],
+    );
+
+    await client.query(
+      `insert into task_reminders (
+        id,
+        task_id,
+        notif_exp_reminder_sent,
+        email_exp_reminder_sent,
+        email_overdue_reminder_sent,
+        notif_overdue_reminder_sent,
+        created_at,
+        updated_at
+      ) values ($1, $2, false, false, false, false, now(), now())`,
+      [randomUUID(), taskId],
     );
   }
 }
@@ -201,31 +285,15 @@ async function main() {
 
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+    ssl: getDatabaseSslConfig(),
   });
 
   await client.connect();
 
   try {
-    const targetEmail = process.env.SEED_USER_EMAIL?.trim();
-
-    const { rows: users } = targetEmail
-      ? await client.query("select id, email from users where lower(email) = lower($1) limit 1", [
-          targetEmail,
-        ])
-      : await client.query("select id, email from users order by created_at desc limit 1");
-
-    if (users.length === 0) {
-      throw new Error(
-        targetEmail
-          ? `No user found for ${targetEmail}.`
-          : "No users found. Create at least one account before seeding tasks.",
-      );
-    }
-
-    const [user] = users;
+    const user = await getOrCreateSeedUser(client);
     await seedTasksForUser(client, user);
-    console.log(`Seeded ${seedTemplates.length} tasks for ${user.email}`);
+    console.log(`Seeded ${seedTemplates.length} tasks and reminder rows for ${user.email}`);
   } finally {
     await client.end();
   }

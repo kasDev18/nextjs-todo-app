@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Reminder Email Preview</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #06080d;
+        color: #eef2ff;
+        font-family:
+          "Instrument Sans",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+      }
+
+      main {
+        width: min(1200px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 40px 0 64px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .intro {
+        color: #94a3b8;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+
+      .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+      }
+
+      .preview-card {
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+      }
+
+      .preview-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .preview-label {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .preview-label[data-status="nearlyExpired"] {
+        background: rgba(61, 130, 246, 0.16);
+        color: #93c5fd;
+      }
+
+      .preview-label[data-status="overdue"] {
+        background: rgba(249, 115, 22, 0.16);
+        color: #fdba74;
+      }
+
+      .preview-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .preview-desc {
+        color: #94a3b8;
+        line-height: 1.6;
+      }
+
+      .email-shell {
+        padding: 16px;
+        background: #020617;
+      }
+
+      .email-frame {
+        width: 100%;
+        min-height: 1040px;
+        border: 0;
+        border-radius: 14px;
+        background: #080c12;
+      }
+
+      @media (max-width: 720px) {
+        main {
+          width: min(100%, calc(100% - 20px));
+          padding-top: 24px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Task Reminder Email Preview</h1>
+      <p class="intro">
+        Browser preview for the reminder email template. This page includes both urgent states the
+        cron job can send: nearly expired and overdue.
+      </p>
+
+      <div class="preview-grid">
+        <section class="preview-card">
+          <div class="preview-header">
+            <div class="preview-label" data-status="nearlyExpired">Due soon</div>
+            <div class="preview-title">Launch checklist cleanup</div>
+            <p class="preview-desc">
+              Sample recipient: Alex Johnson. Project code: TSK-2048. Priority: high.
+            </p>
+          </div>
+          <div class="email-shell">
+            <iframe
+              class="email-frame"
+              title="Due soon reminder preview"
+              srcdoc='<!DOCTYPE html>
+              <html lang="en">
+                <head>
+                  <meta charset="UTF-8" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #080c12; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #080c12; padding: 40px 20px; font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;">
+                    <tr>
+                      <td align="center">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #131a27; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.3);">
+                          <tr>
+                            <td style="background: linear-gradient(135deg, #3d82f6 0%, #7c5fe6 100%); padding: 36px 40px; text-align: center;">
+                              <h1 style="margin: 0; font-family: "Syne", sans-serif; font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">Taskflow</h1>
+                              <p style="margin: 6px 0 0; font-size: 13px; color: rgba(255,255,255,0.8);">Task reminder</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 40px;">
+                              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
+                                <tr>
+                                  <td style="padding: 8px 12px; border-radius: 999px; background-color: rgba(255,255,255,0.08); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #eef2ff;">Due soon</td>
+                                </tr>
+                              </table>
+                              <h2 style="margin: 0 0 8px; font-family: "Syne", sans-serif; font-size: 24px; font-weight: 800; color: #eef2ff; letter-spacing: -0.3px;">Launch checklist cleanup</h2>
+                              <p style="margin: 0 0 28px; font-size: 15px; line-height: 1.7; color: #8b95b0;">Hi Alex Johnson, your task <strong>Launch checklist cleanup</strong> is nearly overdue. Review it before the deadline passes.</p>
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 28px;">
+                                <tr>
+                                  <td valign="top" style="padding: 0; width: 33.33%;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0e1420; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;">
+                                      <tr>
+                                        <td style="padding: 20px;">
+                                          <p style="margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #6b7694; text-transform: uppercase; letter-spacing: 0.06em;">Project</p>
+                                          <p style="margin: 0; font-size: 14px; color: #eef2ff;">TSK-2048</p>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td style="width: 12px;"></td>
+                                  <td valign="top" style="padding: 0; width: 33.33%;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0e1420; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;">
+                                      <tr>
+                                        <td style="padding: 20px;">
+                                          <p style="margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #6b7694; text-transform: uppercase; letter-spacing: 0.06em;">Priority</p>
+                                          <p style="margin: 0; font-size: 14px; color: #eef2ff; text-transform: capitalize;">high</p>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td style="width: 12px;"></td>
+                                  <td valign="top" style="padding: 0; width: 33.33%;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0e1420; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;">
+                                      <tr>
+                                        <td style="padding: 20px;">
+                                          <p style="margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #6b7694; text-transform: uppercase; letter-spacing: 0.06em;">Deadline</p>
+                                          <p style="margin: 0; font-size: 14px; color: #eef2ff;">Mar 18, 2026, 3:00 PM</p>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 28px;">
+                                <tr>
+                                  <td align="center" style="padding: 0;">
+                                    <a href="http://localhost:3000/tasks/task-123/edit" target="_blank" style="display: inline-block; padding: 14px 32px; font-size: 14px; font-weight: 700; color: #ffffff; text-decoration: none; letter-spacing: 0.02em; border-radius: 10px; background: linear-gradient(135deg, #3d82f6 0%, #7c5fe6 100%); box-shadow: 0 4px 20px rgba(61,130,246,0.35);">Review task &rarr;</a>
+                                  </td>
+                                </tr>
+                              </table>
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0e1420; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; margin-bottom: 28px;">
+                                <tr>
+                                  <td style="padding: 24px;">
+                                    <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; color: #6b7694; text-transform: uppercase; letter-spacing: 0.06em;">Open in browser</p>
+                                    <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #8b95b0;">If the button above does not work, copy and paste this link into your browser:</p>
+                                    <p style="margin: 8px 0 0; font-size: 13px; line-height: 1.6; word-break: break-all;"><a href="http://localhost:3000/tasks/task-123/edit" style="color: #3d82f6; text-decoration: none;">http://localhost:3000/tasks/task-123/edit</a></p>
+                                  </td>
+                                </tr>
+                              </table>
+                              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #4d566e;">You are receiving this because Taskflow detected an urgent task deadline on your account.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 24px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.07);">
+                              <p style="margin: 0; font-size: 12px; color: #4d566e;">&copy; 2026 Taskflow. All rights reserved.</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </body>
+              </html>'
+            ></iframe>
+          </div>
+        </section>
+
+        <section class="preview-card">
+          <div class="preview-header">
+            <div class="preview-label" data-status="overdue">Overdue</div>
+            <div class="preview-title">Quarterly reporting handoff</div>
+            <p class="preview-desc">
+              Sample recipient: Maya Patel. Project code: TSK-1182. Priority: critical.
+            </p>
+          </div>
+          <div class="email-shell">
+            <iframe
+              class="email-frame"
+              title="Overdue reminder preview"
+              srcdoc='<!DOCTYPE html>
+              <html lang="en">
+                <head>
+                  <meta charset="UTF-8" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #080c12; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #080c12; padding: 40px 20px; font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;">
+                    <tr>
+                      <td align="center">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #131a27; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.3);">
+                          <tr>
+                            <td style="background: linear-gradient(135deg, #f97316 0%, #ef4444 100%); padding: 36px 40px; text-align: center;">
+                              <h1 style="margin: 0; font-family: "Syne", sans-serif; font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">Taskflow</h1>
+                              <p style="margin: 6px 0 0; font-size: 13px; color: rgba(255,255,255,0.8);">Task reminder</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 40px;">
+                              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
+                                <tr>
+                                  <td style="padding: 8px 12px; border-radius: 999px; background-color: rgba(255,255,255,0.08); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #eef2ff;">Overdue</td>
+                                </tr>
+                              </table>
+                              <h2 style="margin: 0 0 8px; font-family: "Syne", sans-serif; font-size: 24px; font-weight: 800; color: #eef2ff; letter-spacing: -0.3px;">Quarterly reporting handoff</h2>
+                              <p style="margin: 0 0 28px; font-size: 15px; line-height: 1.7; color: #8b95b0;">Hi Maya Patel, your task <strong>Quarterly reporting handoff</strong> is now overdue. Review it to update the deadline or mark it complete.</p>
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 28px;">
+                                <tr>
+                                  <td valign="top" style="padding: 0; width: 33.33%;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0e1420; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;">
+                                      <tr>
+                                        <td style="padding: 20px;">
+                                          <p style="margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #6b7694; text-transform: uppercase; letter-spacing: 0.06em;">Project</p>
+                                          <p style="margin: 0; font-size: 14px; color: #eef2ff;">TSK-1182</p>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td style="width: 12px;"></td>
+                                  <td valign="top" style="padding: 0; width: 33.33%;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0e1420; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;">
+                                      <tr>
+                                        <td style="padding: 20px;">
+                                          <p style="margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #6b7694; text-transform: uppercase; letter-spacing: 0.06em;">Priority</p>
+                                          <p style="margin: 0; font-size: 14px; color: #eef2ff; text-transform: capitalize;">critical</p>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td style="width: 12px;"></td>
+                                  <td valign="top" style="padding: 0; width: 33.33%;">
+                                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0e1420; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;">
+                                      <tr>
+                                        <td style="padding: 20px;">
+                                          <p style="margin: 0 0 6px; font-size: 12px; font-weight: 700; color: #6b7694; text-transform: uppercase; letter-spacing: 0.06em;">Deadline passed</p>
+                                          <p style="margin: 0; font-size: 14px; color: #eef2ff;">Mar 16, 2026, 8:30 AM</p>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 28px;">
+                                <tr>
+                                  <td align="center" style="padding: 0;">
+                                    <a href="http://localhost:3000/tasks/task-456/edit" target="_blank" style="display: inline-block; padding: 14px 32px; font-size: 14px; font-weight: 700; color: #ffffff; text-decoration: none; letter-spacing: 0.02em; border-radius: 10px; background: linear-gradient(135deg, #f97316 0%, #ef4444 100%); box-shadow: 0 4px 20px rgba(249,115,22,0.35);">Review task &rarr;</a>
+                                  </td>
+                                </tr>
+                              </table>
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0e1420; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; margin-bottom: 28px;">
+                                <tr>
+                                  <td style="padding: 24px;">
+                                    <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; color: #6b7694; text-transform: uppercase; letter-spacing: 0.06em;">Open in browser</p>
+                                    <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #8b95b0;">If the button above does not work, copy and paste this link into your browser:</p>
+                                    <p style="margin: 8px 0 0; font-size: 13px; line-height: 1.6; word-break: break-all;"><a href="http://localhost:3000/tasks/task-456/edit" style="color: #f97316; text-decoration: none;">http://localhost:3000/tasks/task-456/edit</a></p>
+                                  </td>
+                                </tr>
+                              </table>
+                              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #4d566e;">You are receiving this because Taskflow detected an urgent task deadline on your account.</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 24px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.07);">
+                              <p style="margin: 0; font-size: 12px; color: #4d566e;">&copy; 2026 Taskflow. All rights reserved.</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </body>
+              </html>'
+            ></iframe>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
