@@ -48,7 +48,7 @@ function SignUpPageContent() {
       return;
     }
 
-    toast.success("Account created successfully");
+    toast.success("Account created successfully. Please check your email to verify your account.");
     router.push(
       redirectTo === "/" ? "/signin" : `/signin?redirectTo=${encodeURIComponent(redirectTo)}`,
     );
